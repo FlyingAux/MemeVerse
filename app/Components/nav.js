@@ -22,11 +22,20 @@ const Nav = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser && storedUser.username === formData.username && storedUser.password === formData.password) {
+
+    if (!storedUser) {
+      alert("No account found. Please sign up first.");
+      setFormData({ username: "", password: "" });
+      return;
+    }
+
+    if (storedUser.username === formData.username && storedUser.password === formData.password) {
       setUser(storedUser);
       setIsModalOpen(false);
+      setFormData({ username: "", password: "" });
     } else {
       alert("Invalid credentials!");
+      setFormData({ username: "", password: "" });
     }
   };
 
@@ -35,16 +44,23 @@ const Nav = () => {
     localStorage.setItem("user", JSON.stringify(formData));
     setUser(formData);
     setIsModalOpen(false);
+    setIsSignup(false);
+    setFormData({ username: "", password: "" });
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
     setUser(null);
+  };
+
+  const openModal = () => {
+    setIsSignup(false);
+    setIsModalOpen(true);
+    setFormData({ username: "", password: "" }); 
   };
 
   return (
     <>
-      <div className="nav-main h-20 w-full flex items-center justify-center text-xl fixed z-50 bg-white shadow-md">
+      <div className="nav-main h-20 w-full flex items-center justify-center text-xl fixed z-50">
         <div className="nav-left h-20 w-1/2 flex items-center justify-start gap-5 px-20">
           <Link href="/" className="flex items-center gap-2">
             <IoMdHome /> Home
@@ -68,7 +84,7 @@ const Nav = () => {
               Logout ({user.username})
             </button>
           ) : (
-            <button onClick={() => setIsModalOpen(true)} className="bg-blue-500 text-white px-4 py-2 rounded-md">
+            <button onClick={openModal} className="bg-blue-500 text-white px-4 py-2 rounded-md">
               Login/Sign-up
             </button>
           )}
@@ -78,11 +94,10 @@ const Nav = () => {
         </div>
       </div>
 
-
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
- 
+           
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-3 right-3 text-gray-600 hover:text-red-500 text-2xl"
