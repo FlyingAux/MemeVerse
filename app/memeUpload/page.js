@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { addMeme } from "../utils/indexedDB";
-import LoginModal from "../components/LoginModal";
+import LoginModal from "../utils/LoginModal";
 import { motion } from "framer-motion";
 
 const UploadMeme = () => {
