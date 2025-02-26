@@ -8,7 +8,8 @@ import { FaStar } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
 import LoginModal from "./LoginModal";
 import { AiOutlineClose } from "react-icons/ai";
-import { motion } from "framer-motion"; 
+import { motion } from "framer-motion";
+import { RiMenu3Line } from "react-icons/ri";
 
 const Nav = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,13 +29,15 @@ const Nav = () => {
 
   return (
     <>
+  
       <motion.div
-        className="nav-main h-20 w-full flex items-center justify-between text-xl fixed z-50 bg-white shadow-md px-4 sm:px-20"
+        className="nav-main h-20 w-full flex items-center justify-between text-xl fixed z-50 bg-white shadow-md px-4 sm:px-20 sm:flex hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
         <div className="nav-left h-20 flex items-center justify-start gap-5 overflow-hidden sm:flex">
+ 
           <motion.div
             className="flex items-center gap-2"
             initial={{ opacity: 0, y: -20 }}
@@ -81,13 +84,13 @@ const Nav = () => {
         </div>
 
         <div className="nav-right h-20 flex items-center justify-end gap-5 overflow-hidden sm:flex">
+  
           <motion.div
             className="flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1, type: "spring", stiffness: 150 }}
           >
-            <IoIosSearch />
           </motion.div>
 
           {user ? (
@@ -136,40 +139,45 @@ const Nav = () => {
             <Link href="/memeUpload">Upload Meme</Link>
           </motion.div>
         </div>
-
-        <div className="sm:hidden flex items-center justify-end gap-5">
-          {isMobileMenuOpen ? (
-            <motion.button
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="text-2xl text-gray-600 hover:text-purple-600"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-              <AiOutlineClose />
-            </motion.button>
-          ) : (
-            <motion.button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="text-2xl text-gray-600 hover:text-purple-600"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-              <FaStar />
-            </motion.button>
-          )}
-        </div>
       </motion.div>
+
+      {/* Mobile Menu Button */}
+      <div className="sm:hidden flex items-center justify-start gap-24 p-5 w-full bg-zinc-200 fixed z-50">
+        
+        {isMobileMenuOpen ? (
+          <motion.button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="text-2xl text-gray-600 hover:text-purple-600"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          >
+            <AiOutlineClose />
+          </motion.button>
+        ) : (
+          <motion.button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="text-2xl text-gray-600 hover:text-purple-600"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          >
+           <RiMenu3Line />
+          </motion.button>
+        )}
+        <h1 className="text-xl font-bold text-purple-600">MemeVerse</h1>
+      </div>
+
 
       {isMobileMenuOpen && (
         <motion.div
-          className="sm:hidden flex flex-col items-start justify-start gap-2 px-5 w-1/2 bg-zinc-200 py-5 fixed top-20 z-50"
-          initial={{ x: "100%" }}
+          className="sm:hidden flex flex-col items-start justify-center gap-2 px-5 w-1/2 bg-zinc-200 py-5 top-16 fixed z-50"
+          initial={{ x: "-100%" }}
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
+
           <motion.div
             className="text-xl py-2 hover:text-purple-600"
             initial={{ opacity: 0 }}
