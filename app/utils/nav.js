@@ -6,7 +6,7 @@ import { FaRankingStar } from "react-icons/fa6";
 import { FiTrendingUp } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
-import LoginModal from "../utils/LoginModal";
+import LoginModal from "./LoginModal";
 import { AiOutlineClose } from "react-icons/ai";
 import { motion } from "framer-motion"; 
 
