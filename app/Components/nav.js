@@ -1,66 +1,31 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { IoMdHome } from "react-icons/io";
 import { FaRankingStar } from "react-icons/fa6";
 import { FiTrendingUp } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
-import { IoMdClose } from "react-icons/io";
+import LoginModal from "./LoginModal";
 
 const Nav = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSignup, setIsSignup] = useState(false);
   const [user, setUser] = useState(null);
-  const [formData, setFormData] = useState({ username: "", password: "" });
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    const storedUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    setUser(storedUser);
   }, []);
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-
-    if (!storedUser) {
-      alert("No account found. Please sign up first.");
-      setFormData({ username: "", password: "" });
-      return;
-    }
-
-    if (storedUser.username === formData.username && storedUser.password === formData.password) {
-      setUser(storedUser);
-      setIsModalOpen(false);
-      setFormData({ username: "", password: "" });
-    } else {
-      alert("Invalid credentials!");
-      setFormData({ username: "", password: "" });
-    }
-  };
-
-  const handleSignup = (e) => {
-    e.preventDefault();
-    localStorage.setItem("user", JSON.stringify(formData));
-    setUser(formData);
-    setIsModalOpen(false);
-    setIsSignup(false);
-    setFormData({ username: "", password: "" });
-  };
-
   const handleLogout = () => {
+    localStorage.removeItem("loggedInUser");
     setUser(null);
-  };
-
-  const openModal = () => {
-    setIsSignup(false);
-    setIsModalOpen(true);
-    setFormData({ username: "", password: "" }); 
+    window.location.href = "/"; // Redirect to home after logout
   };
 
   return (
     <>
-      <div className="nav-main h-20 w-full flex items-center justify-center text-xl fixed z-50">
+      <div className="nav-main h-20 w-full flex items-center justify-center text-xl fixed z-50 bg-white shadow-md">
         <div className="nav-left h-20 w-1/2 flex items-center justify-start gap-5 px-20">
           <Link href="/" className="flex items-center gap-2">
             <IoMdHome /> Home
@@ -75,67 +40,51 @@ const Nav = () => {
             <FaRankingStar /> Rankings
           </Link>
         </div>
+
         <div className="nav-right h-20 w-1/2 flex items-center justify-end gap-5 px-20">
           <h1 className="flex items-center justify-center">
             <IoIosSearch />
           </h1>
+
           {user ? (
-            <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-md">
-              Logout ({user.username})
-            </button>
+            <>
+              <Link
+                href="/profile"
+                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+              >
+                Profile ({user.username})
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+              >
+                Logout
+              </button>
+            </>
           ) : (
-            <button onClick={openModal} className="bg-blue-500 text-white px-4 py-2 rounded-md">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+            >
               Login/Sign-up
             </button>
           )}
-          <Link href="/uploadmeme" className="flex items-center justify-center">
-            Upload meme
+
+          <Link
+            href="/memeUpload"
+            className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600"
+          >
+            Upload Meme
           </Link>
         </div>
       </div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-           
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-3 right-3 text-gray-600 hover:text-red-500 text-2xl"
-            >
-              <IoMdClose />
-            </button>
-
-            <h2 className="text-2xl font-bold mb-4 text-center">{isSignup ? "Sign Up" : "Login"}</h2>
-            <form onSubmit={isSignup ? handleSignup : handleLogin} className="flex flex-col gap-3">
-              <input
-                type="text"
-                placeholder="Username"
-                value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                required
-                className="border p-2 rounded-md"
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                required
-                className="border p-2 rounded-md"
-              />
-              <button type="submit" className="bg-green-500 text-white py-2 rounded-md">
-                {isSignup ? "Sign Up" : "Login"}
-              </button>
-            </form>
-            <p className="mt-3 text-center">
-              {isSignup ? "Already have an account?" : "Don't have an account?"}
-              <button className="text-blue-500 ml-1" onClick={() => setIsSignup(!isSignup)}>
-                {isSignup ? "Login" : "Sign Up"}
-              </button>
-            </p>
-          </div>
-        </div>
-      )}
+      <LoginModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onLogin={(user) => setUser(user)}
+      />
     </>
   );
 };
