@@ -34,7 +34,7 @@ const Nav = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="nav-left h-20 flex items-center justify-start gap-5 hidden sm:flex">
+        <div className="nav-left h-20 flex items-center justify-start gap-5 overflow-hidden sm:flex">
           <motion.div
             className="flex items-center gap-2"
             initial={{ opacity: 0, y: -20 }}
@@ -80,7 +80,7 @@ const Nav = () => {
           </motion.div>
         </div>
 
-        <div className="nav-right h-20 flex items-center justify-end gap-5 hidden sm:flex">
+        <div className="nav-right h-20 flex items-center justify-end gap-5 overflow-hidden sm:flex">
           <motion.div
             className="flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
