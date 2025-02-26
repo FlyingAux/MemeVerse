@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { IoMdClose } from "react-icons/io";
+import { motion } from "framer-motion";
 
 const LoginModal = ({ isOpen, onClose, onLogin }) => {
   const [isSignup, setIsSignup] = useState(false);
@@ -8,13 +9,12 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  // Reset fields when the modal opens or closes
   useEffect(() => {
     if (isOpen) {
       setUsername("");
       setPassword("");
       setError("");
-      setIsSignup(false); 
+      setIsSignup(false);
     }
   }, [isOpen]);
 
@@ -34,9 +34,8 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
       users.push({ username, password });
       localStorage.setItem("users", JSON.stringify(users));
       alert("Account created successfully!");
-      
-  
-      setUsername(""); 
+
+      setUsername("");
       setPassword("");
       setError("");
       setIsSignup(false);
@@ -47,13 +46,12 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
 
       if (!validUser) {
         setError("Invalid username or password!");
-        return; 
+        return;
       }
 
       localStorage.setItem("loggedInUser", JSON.stringify(validUser));
       onLogin(validUser);
-      onClose(); 
-
+      onClose();
 
       setUsername("");
       setPassword("");
@@ -64,9 +62,18 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-5 rounded-md shadow-lg w-96 relative">
-
+    <motion.div
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <motion.div
+        className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm relative"
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      >
         <button
           className="absolute top-3 right-3 text-gray-600 hover:text-red-500 text-2xl"
           onClick={onClose}
@@ -74,41 +81,51 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
           <IoMdClose />
         </button>
 
-        <h2 className="text-xl font-bold mb-4 text-center">
+        <h2 className="text-2xl font-semibold text-center mb-4 text-gray-800">
           {isSignup ? "Sign Up" : "Login"}
         </h2>
-        
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
-        <input
+        {error && <p className="text-red-500 text-sm mb-2 text-center">{error}</p>}
+
+        <motion.input
           type="text"
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="border p-2 w-full my-2 rounded-md"
+          className="border p-3 w-full my-2 rounded-md focus:ring-2 focus:ring-blue-500"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
         />
-        <input
+
+        <motion.input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 w-full my-2 rounded-md"
+          className="border p-3 w-full my-2 rounded-md focus:ring-2 focus:ring-blue-500"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
         />
-        <button
-          className="bg-blue-500 text-white px-4 py-2 w-full rounded-md"
+
+        <motion.button
           onClick={handleAuth}
+          className="bg-blue-500 text-white px-4 py-2 w-full rounded-md hover:bg-blue-600 transition-all duration-200 mt-4"
+          whileHover={{ scale: 1.05 }}
         >
           {isSignup ? "Sign Up" : "Login"}
-        </button>
+        </motion.button>
 
-        <p
+        <motion.p
           className="text-sm text-blue-500 mt-2 text-center cursor-pointer"
           onClick={() => setIsSignup(!isSignup)}
+          whileHover={{ color: "#3B82F6" }}
         >
           {isSignup ? "Already have an account? Login" : "Don't have an account? Sign up"}
-        </p>
-      </div>
-    </div>
+        </motion.p>
+      </motion.div>
+    </motion.div>
   );
 };
 
