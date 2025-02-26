@@ -10,7 +10,7 @@ import { IoIosSearch } from "react-icons/io";
 const Nav = () => {
   return (
     <>
-        <div className='nav-main h-20 w-full flex items-center justify-center text-xl'>
+        <div className='nav-main h-20 w-full flex items-center justify-center text-xl fixed z-50'>
             <div className='nav-left h-20 w-1/2 flex items-center justify-start gap-5 px-20'>
                 <Link href={'/'} className='flex items-center justify-center gap-2'><IoMdHome /> Home</Link>
                 <Link href={'/top'} className='flex items-center justify-center gap-2'><FaStar /> Top</Link>
