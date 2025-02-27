@@ -42,7 +42,6 @@ const Home = () => {
 
         setMemes(mergedMemes);
 
-        
         mergedMemes.forEach((meme) => {
           if (meme.id) saveMeme(meme);
         });
@@ -67,10 +66,19 @@ const Home = () => {
   const handleLike = async (memeId) => {
     if (!user) return alert("You must be logged in to like memes!");
 
+    const isCurrentlyLiked = likedMemes[memeId];
+    
     setMemes((prevMemes) => {
-      const updatedMemes = prevMemes.map((meme) =>
-        meme.id === memeId ? { ...meme, likes: (meme.likes || 0) + 1 } : meme
-      );
+      const updatedMemes = prevMemes.map((meme) => {
+        if (meme.id === memeId) {
+          const newLikeCount = isCurrentlyLiked 
+            ? Math.max(0, (meme.likes || 0) - 1) 
+            : (meme.likes || 0) + 1;
+          
+          return { ...meme, likes: newLikeCount };
+        }
+        return meme;
+      });
 
       const updatedMeme = updatedMemes.find((meme) => meme.id === memeId);
       if (updatedMeme) {
@@ -80,7 +88,15 @@ const Home = () => {
       return updatedMemes;
     });
 
-    setLikedMemes((prev) => ({ ...prev, [memeId]: true }));
+    setLikedMemes((prev) => {
+      if (isCurrentlyLiked) {
+        const newState = { ...prev };
+        delete newState[memeId];
+        return newState;
+      } else {
+        return { ...prev, [memeId]: true };
+      }
+    });
   };
 
   const handleComment = async (memeId) => {
@@ -111,80 +127,129 @@ const Home = () => {
   };
 
   return (
-    <div className="py-24">
-      <h2 className="text-4xl font-semibold text-center mb-8 text-blue-500">🔥 Trending Memes</h2>
+    <div className="py-24 bg-gradient-to-b from-purple-50 to-white min-h-screen">
+      <div className="container mx-auto px-4">
+        <motion.h2 
+          className="text-4xl font-bold text-center text-purple-600 mb-8 tracking-tight"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          🔥 Trending Memes
+        </motion.h2>
 
-      <InfiniteScroll
-        dataLength={memes.length}
-        next={fetchMoreMemes}
-        hasMore={hasMore}
-        loader={<motion.div className="text-center text-lg">Loading more memes...</motion.div>}
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-8 px-5">
-          {memes.map((meme) => (
-            <motion.div
-              key={meme.id}
-              className="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200"
+        <InfiniteScroll
+          dataLength={memes.length}
+          next={fetchMoreMemes}
+          hasMore={hasMore}
+          loader={
+            <motion.div 
+              className="text-center py-4 text-purple-500 font-medium"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              transition={{ duration: 0.3 }}
             >
-              <img
-                src={meme.imageUrl}
-                alt={meme.title}
-                className="w-full h-64 object-cover rounded-md mb-2 mt-2"
-              />
-              <h3 className="text-lg font-semibold text-gray-800">{meme.title}</h3>
-
-           
-              <div className="flex items-center gap-3 mt-2">
-                <button
-                  onClick={() => handleLike(meme.id)}
-                  className={likedMemes[meme.id] ? "text-red-500 text-2xl" : "text-gray-500 text-2xl"}
-                >
-                  {likedMemes[meme.id] ? <FaHeart /> : <FaRegHeart />}
-                </button>
-                <span>{meme.likes || 0}</span>
+              <div className="flex justify-center items-center space-x-2">
+                <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
-
-            
-              <div className="mt-4">
-                <h4 className="font-semibold text-gray-700 mb-2">Comments:</h4>
-                <div className="max-h-40 overflow-y-auto border rounded-md p-2 mb-2">
-                  {meme.comments && meme.comments.length > 0 ? (
-                    meme.comments.map((comment, index) => (
-                      <p key={index} className="text-gray-700 text-sm mb-1">
-                        <strong>{comment.user}:</strong> {comment.text}
-                      </p>
-                    ))
-                  ) : (
-                    <p className="text-gray-500 text-sm">No comments yet.</p>
-                  )}
-                </div>
-
-          
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={commentMap[meme.id] || ""}
-                    onChange={(e) =>
-                      setCommentMap({ ...commentMap, [meme.id]: e.target.value })
-                    }
-                    placeholder="Write a comment..."
-                    className="border p-2 flex-1 rounded-md"
-                  />
-                  <button
-                    onClick={() => handleComment(meme.id)}
-                    className="text-green-500 text-2xl"
-                  >
-                    <IoMdSend />
-                  </button>
-                </div>
-              </div>
+              <p className="mt-2">Loading more memes...</p>
             </motion.div>
-          ))}
-        </div>
-      </InfiniteScroll>
+          }
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {memes.map((meme) => (
+              <motion.div
+                key={meme.id}
+                className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-purple-100"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="relative overflow-hidden group">
+                  <img
+                    src={meme.imageUrl}
+                    alt={meme.title}
+                    className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-purple-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3 line-clamp-1">{meme.title}</h3>
+                
+                  <div className="flex items-center gap-2 mb-4">
+                    <button
+                      onClick={() => handleLike(meme.id)}
+                      className={`transition-colors duration-200 flex items-center ${
+                        likedMemes[meme.id] ? "text-red-500" : "text-gray-400 hover:text-red-500"
+                      }`}
+                      aria-label={likedMemes[meme.id] ? "Unlike meme" : "Like meme"}
+                    >
+                      {likedMemes[meme.id] ? <FaHeart className="text-xl" /> : <FaRegHeart className="text-xl" />}
+                    </button>
+                    <span className={`font-medium ${likedMemes[meme.id] ? "text-red-500" : "text-gray-500"}`}>
+                      {meme.likes || 0}
+                    </span>
+                  </div>
+                
+                  <div>
+                    <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      <span>Comments</span>
+                      {meme.comments && meme.comments.length > 0 && (
+                        <span className="bg-purple-100 text-purple-600 text-xs font-medium px-2 py-0.5 rounded-full">
+                          {meme.comments.length}
+                        </span>
+                      )}
+                    </h4>
+                    
+                    <div className="max-h-36 overflow-y-auto rounded-lg bg-gray-50 p-3 mb-3 scrollbar-thin scrollbar-thumb-purple-200 scrollbar-track-transparent">
+                      {meme.comments && meme.comments.length > 0 ? (
+                        meme.comments.map((comment, index) => (
+                          <div 
+                            key={index} 
+                            className="text-gray-700 text-sm mb-2 pb-2 border-b border-gray-100 last:border-0"
+                          >
+                            <span className="font-semibold text-purple-600">{comment.user}</span>
+                            <p className="mt-1">{comment.text}</p>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-400 text-sm italic">No comments yet. Be the first!</p>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1 border border-gray-200 focus-within:border-purple-300 focus-within:ring-1 focus-within:ring-purple-300 transition-all">
+                      <input
+                        type="text"
+                        value={commentMap[meme.id] || ""}
+                        onChange={(e) =>
+                          setCommentMap({ ...commentMap, [meme.id]: e.target.value })
+                        }
+                        placeholder="Write a comment..."
+                        className="border-none bg-transparent p-2 flex-1 focus:outline-none text-gray-700 text-sm"
+                      />
+                      <button
+                        onClick={() => handleComment(meme.id)}
+                        disabled={!commentMap[meme.id]?.trim()}
+                        className={`p-2 rounded-full ${
+                          commentMap[meme.id]?.trim() 
+                            ? "text-purple-500 hover:bg-purple-100" 
+                            : "text-gray-300 cursor-not-allowed"
+                        } transition-colors`}
+                        aria-label="Send comment"
+                      >
+                        <IoMdSend className="text-xl" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </InfiniteScroll>
+      </div>
     </div>
   );
 };
