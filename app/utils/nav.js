@@ -166,7 +166,7 @@ const Nav = () => {
 
       {isMobileMenuOpen && (
         <motion.div
-          className="sm:hidden flex flex-col items-start justify-center gap-2 px-5 w-1/2 bg-zinc-200 py-5 top-16 fixed z-50"
+          className="sm:hidden flex flex-col items-start justify-center gap-1 px-5 w-1/2 bg-zinc-200 py-5 top-16 fixed z-50"
           initial={{ x: "-100%" }}
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
@@ -211,7 +211,7 @@ const Nav = () => {
 
           {user && (
             <motion.div
-              className="text-xl py-2 hover:text-purple-600"
+              className="text-xl hover:text-purple-600"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
@@ -221,7 +221,7 @@ const Nav = () => {
           )}
 
           <motion.div
-            className="text-xl py-2 hover:text-purple-600"
+            className="text-lg py-2 px-3 rounded-xl bg-purple-500 text-white hover:text-purple-600"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}

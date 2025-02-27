@@ -120,7 +120,7 @@ const Home = () => {
         hasMore={hasMore}
         loader={<motion.div className="text-center text-lg">Loading more memes...</motion.div>}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-8 px-5">
           {memes.map((meme) => (
             <motion.div
               key={meme.id}
@@ -132,7 +132,7 @@ const Home = () => {
               <img
                 src={meme.imageUrl}
                 alt={meme.title}
-                className="w-full h-64 object-cover rounded-md mb-4"
+                className="w-full h-64 object-cover rounded-md mb-2 mt-2"
               />
               <h3 className="text-lg font-semibold text-gray-800">{meme.title}</h3>
 
