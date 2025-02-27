@@ -26,9 +26,7 @@ const UploadMeme = () => {
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       } else {
-        alert("Please log in to upload memes.");
         setShowLoginModal(true);
-        router.push("/");
       }
     }
   }, []);
@@ -66,64 +64,13 @@ const UploadMeme = () => {
     setBottomText("");
   };
 
-  const generateMeme = async () => {
-    if (!selectedTemplate) {
-      alert("Please select a meme template.");
-      return;
-    }
-    if (!topText.trim() && !bottomText.trim()) {
-      alert("Please enter at least one caption.");
-      return;
-    }
-
-    setLoading(true);
-
-    const params = new URLSearchParams({
-      template_id: selectedTemplate.id,
-      username: process.env.NEXT_PUBLIC_IMGFLIP_USERNAME,
-      password: process.env.NEXT_PUBLIC_IMGFLIP_PASSWORD,
-      text0: topText,
-      text1: bottomText,
-    });
-
-    try {
-      const response = await fetch(`https://api.imgflip.com/caption_image?${params}`, {
-        method: "POST",
-      });
-      const data = await response.json();
-      console.log("Generated Meme Response:", data);
-
-      if (data.success) {
-        setImagePreview(data.data.url);
-        setIsConfirmed(true); 
-      } else {
-        alert("Failed to generate meme. Please check Imgflip API credentials.");
-      }
-    } catch (error) {
-      console.error("Error generating meme:", error);
-      alert("Error generating meme.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const confirmUpload = () => {
-    if (!title || (!image && !imagePreview)) {
-      alert("Please provide a title and select an image.");
-      return;
-    }
-    setIsConfirmed(true);
-  };
-
   const uploadImage = async () => {
     if (!isConfirmed) {
       alert("Please confirm before uploading.");
       return;
     }
-
     setLoading(true);
     let imageUrl = imagePreview;
-
     if (image) {
       const formData = new FormData();
       formData.append("image", image);
@@ -134,19 +81,18 @@ const UploadMeme = () => {
           method: "POST",
           body: formData,
         });
-
         const data = await response.json();
-        console.log("ImgBB Response:", data);
-
         if (data.success) {
           imageUrl = data.data.url;
         } else {
           alert("Failed to upload image.");
+          setLoading(false);
           return;
         }
       } catch (error) {
         console.error("Upload error:", error);
         alert("Error uploading image.");
+        setLoading(false);
         return;
       }
     }
@@ -160,32 +106,20 @@ const UploadMeme = () => {
       comments: [],
       date: new Date().toISOString(),
     };
-
     await addMeme(newMeme);
-
     setTitle("");
     setImage(null);
     setImagePreview(null);
     setSelectedTemplate(null);
     setIsConfirmed(false);
-
     alert("Meme uploaded successfully!");
-    router.push("/profile");
-
     setLoading(false);
+    router.push("/profile");
   };
 
   return (
-    <div className="py-20 flex flex-col items-center">
-      <motion.h2
-        className="text-2xl font-bold mb-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
-        Upload or Generate Meme
-      </motion.h2>
-
+    <div className="py-24 flex flex-col items-center max-w-3xl mx-auto p-8 bg-white shadow-xl rounded-xl border border-gray-200">
+      <motion.h2 className="text-3xl font-extrabold mb-6 text-gray-900">Upload or Generate Meme</motion.h2>
       {user ? (
         <>
           <motion.input
@@ -193,118 +127,35 @@ const UploadMeme = () => {
             placeholder="Meme Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="border p-2 my-2 w-full max-w-md"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
+            className="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <motion.input
             type="file"
             accept="image/*"
             onChange={handleImageChange}
-            className="border p-2 my-2 w-full max-w-md"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
+            className="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <h3 className="text-lg font-semibold mt-4">Or Choose a Meme Template:</h3>
-          <motion.div
-            className="flex gap-2 overflow-x-auto p-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-          >
+          <motion.div className="grid grid-cols-5 gap-2 mt-3">
             {memeTemplates.map((template) => (
               <motion.img
                 key={template.id}
                 src={template.url}
                 alt={template.name}
-                className={`w-20 h-20 rounded-md cursor-pointer ${selectedTemplate?.id === template.id ? "border-4 border-blue-500" : ""}`}
+                className={`w-24 h-24 rounded-lg cursor-pointer border-2 ${selectedTemplate?.id === template.id ? "border-blue-500" : "border-gray-300"}`}
                 onClick={() => handleTemplateSelect(template)}
-                whileHover={{ scale: 1.1 }}
-                transition={{ duration: 0.3 }}
               />
             ))}
           </motion.div>
-
-          {selectedTemplate && (
-            <>
-              <motion.input
-                type="text"
-                placeholder="Top Text"
-                value={topText}
-                onChange={(e) => setTopText(e.target.value)}
-                className="border p-2 my-2 w-full max-w-md"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              />
-              <motion.input
-                type="text"
-                placeholder="Bottom Text"
-                value={bottomText}
-                onChange={(e) => setBottomText(e.target.value)}
-                className="border p-2 my-2 w-full max-w-md"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              />
-              <motion.button
-                onClick={generateMeme}
-                className="bg-yellow-500 text-white px-4 py-2 mt-2 rounded-md"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                {loading ? "Generating..." : "Generate Meme"}
-              </motion.button>
-            </>
-          )}
-
-          {imagePreview && (
-            <motion.img
-              src={imagePreview}
-              alt="Meme Preview"
-              className="w-64 h-auto mt-4 rounded-md shadow-lg"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            />
-          )}
-
-          <motion.button
-            onClick={confirmUpload}
-            className="bg-green-500 text-white px-4 py-2 mt-2 rounded-md"
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.3 }}
-          >
-            Confirm Upload
-          </motion.button>
-
-          {isConfirmed && (
-            <motion.button
-              onClick={uploadImage}
-              className="bg-blue-500 text-white px-4 py-2 mt-2 rounded-md"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
-            >
-              {loading ? "Uploading..." : "Upload Meme"}
-            </motion.button>
-          )}
+          {imagePreview && <motion.img src={imagePreview} alt="Preview" className="w-64 mt-6 rounded-lg shadow-md border border-gray-300" />}
+          <motion.button onClick={() => setIsConfirmed(true)} className="px-6 py-3 bg-green-500 text-white rounded-lg mt-4 hover:bg-green-600 transition-all">Confirm</motion.button>
+          <motion.button onClick={uploadImage} disabled={!isConfirmed} className={`px-6 py-3 ${isConfirmed ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"} text-white rounded-lg mt-6 transition-all`}>{loading ? "Uploading..." : "Upload Meme"}</motion.button>
         </>
       ) : (
-        <motion.p
-          className="text-red-500"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-          Please log in to upload memes.
-        </motion.p>
+        <motion.p className="text-red-500">Please log in to upload memes.</motion.p>
       )}
-
       {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} />}
     </div>
   );

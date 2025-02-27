@@ -1,76 +1,151 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaComment, FaUser, FaCrown } from "react-icons/fa";
 import { getMemes } from "../utils/indexedDB";
 import { motion } from "framer-motion";
 
 const TopMemes = () => {
   const [topMemes, setTopMemes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchTopMemes = async () => {
+      setIsLoading(true);
       const allMemes = await getMemes();
       const sortedMemes = allMemes.sort((a, b) => b.likes - a.likes).slice(0, 10);
       setTopMemes(sortedMemes);
+      setIsLoading(false);
     };
 
     fetchTopMemes();
   }, []);
 
   return (
-    <div className="py-24 px-4 md:px-8">
-      <motion.h2
-        className="text-3xl font-bold text-center text-blue-600 mb-10"
+    <div className="py-24 px-4 md:px-8 bg-gradient-to-b from-blue-50 to-white min-h-screen">
+      <motion.div
+        className="max-w-6xl mx-auto"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        🏆 Top 10 Most Liked Memes
-      </motion.h2>
+        <motion.div
+          className="text-center mb-12"
+          initial={{ y: -30 }}
+          animate={{ y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-3">
+            🏆 Top 10 Most Liked Memes
+          </h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            The cream of the crop - our community's most loved meme creations
+          </p>
+        </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-5">
-        {topMemes.length > 0 ? (
-          topMemes.map((meme, index) => (
-            <motion.div
-              key={meme.id}
-              className="border p-5 rounded-lg shadow-lg bg-white transition-transform transform hover:scale-105 hover:shadow-xl"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: index * 0.3 }}
-            >
-              <motion.img
-                src={meme.imageUrl}
-                alt={meme.title}
-                className="w-full h-96 object-cover rounded-md mb-4"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
-              />
-              <h3 className="text-lg font-semibold text-gray-800">{meme.title}</h3>
-
-              <div className="flex items-center gap-2 mt-2 text-red-500 text-xl">
-                <FaHeart /> <span>{meme.likes || 0}</span>
-              </div>
-
-              <div className="mt-2">
-                <h4 className="font-bold text-gray-800">Top Comments:</h4>
-                <div className="max-h-24 overflow-y-auto border rounded-md p-2 bg-gray-50">
-                  {meme.comments && meme.comments.length > 0 ? (
-                    meme.comments.slice(0, 3).map((comment, index) => (
-                      <p key={index} className="text-gray-700">
-                        <strong>{comment.user}:</strong> {comment.text}
-                      </p>
-                    ))
-                  ) : (
-                    <p className="text-gray-500">No comments yet.</p>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        ) : topMemes.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {topMemes.map((meme, index) => (
+              <motion.div
+                key={meme.id}
+                className="rounded-xl overflow-hidden shadow-xl bg-white transform transition-all duration-300"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ 
+                  y: -10,
+                  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" 
+                }}
+              >
+                <div className="relative">
+                  <motion.img
+                    src={meme.imageUrl}
+                    alt={meme.title}
+                    className="w-full h-64 object-cover"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                  
+                  {index < 3 && (
+                    <div className="absolute top-0 left-0 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-4 py-2 rounded-br-lg font-bold flex items-center gap-2">
+                      <FaCrown /> 
+                      <span>#{index + 1}</span>
+                    </div>
                   )}
+                  
+                  <div className="absolute top-0 right-0 bg-red-500 text-white px-3 py-1 rounded-bl-lg font-medium flex items-center gap-1">
+                    <FaHeart /> {meme.likes || 0}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))
+
+                <div className="p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-xl font-bold text-gray-800 truncate">{meme.title}</h3>
+                    {meme.user && (
+                      <div className="flex items-center text-blue-600 text-sm">
+                        <FaUser className="mr-1" />
+                        <span>{meme.user}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 mb-4">
+                    <div className="flex items-center gap-2 mb-2 text-gray-700">
+                      <FaComment className="text-blue-500" />
+                      <h4 className="font-bold">Top Comments</h4>
+                    </div>
+                    
+                    <div className="max-h-32 overflow-y-auto space-y-2">
+                      {meme.comments && meme.comments.length > 0 ? (
+                        meme.comments.slice(0, 3).map((comment, index) => (
+                          <motion.div 
+                            key={index} 
+                            className="p-2 bg-white rounded-lg shadow-sm"
+                            whileHover={{ x: 5 }}
+                          >
+                            <p className="text-gray-700">
+                              <span className="font-semibold text-blue-600">{comment.user}: </span> 
+                              {comment.text}
+                            </p>
+                          </motion.div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 italic">No comments yet. Be the first!</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2 text-red-500 font-semibold">
+                      <FaHeart className="text-xl" />
+                      <span className="text-lg">{meme.likes || 0} Likes</span>
+                    </div>
+                    
+                    <motion.button
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-medium"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      View Meme
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         ) : (
-          <p className="text-center text-gray-500">No memes available.</p>
+          <motion.div 
+            className="text-center py-16 bg-white rounded-xl shadow-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <p className="text-xl text-gray-500">No memes available yet. Create the first viral meme!</p>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };
