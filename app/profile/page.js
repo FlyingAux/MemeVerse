@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { getMemes } from "../utils/indexedDB";
 import { motion } from "framer-motion";
+import { FaRegSmileBeam } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
+import { PiDotsThreeOutline } from "react-icons/pi";
 
 const Profile = () => {
   const [userMemes, setUserMemes] = useState([]);
@@ -44,15 +47,33 @@ const Profile = () => {
 
   return (
     <div className="py-20 px-4 md:px-8">
+      <div className="flex flex-col gap-2 items-center justify-center h-80 w-full bg-gray-300 p-3 rounded-xl">
+      <div className="h-16 w-16 border-[3px] border-white rounded-full bg-blue-500"></div>
       <motion.h2
-        className="text-3xl font-bold text-center mb-5"
+        className="text-3xl font-bold text-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        Profile: {user.username}
+        {user.username}
       </motion.h2>
-      <h2 className="text-xl font-semibold mt-5 text-center">Your Uploaded Memes</h2>
+      <h2 className="font-semibold text-gray-400">Lorem ispusm pentanit</h2>
+      <div className="h-fit py-2 w-full flex items-center justify-center gap-3">
+        <div className="flex flex-col items-center justify-center text-3xl border-black border-2 h-20 w-32 rounded-xl">
+          <FaRegSmileBeam />
+          <h1 className="text-lg font-semibold tracking-tighter">Set a Status</h1>
+        </div>
+        <div className="flex flex-col items-center justify-center text-3xl border-black border-2 h-20 w-32 rounded-xl">
+        <FaPen />
+          <h1 className="text-lg font-semibold">Edit</h1>
+        </div>
+        <div className="flex flex-col items-center justify-center text-3xl border-black border-2 h-20 w-32 rounded-xl">
+        <PiDotsThreeOutline />
+          <h1 className="text-lg font-semibold">More</h1>
+        </div>
+      </div>
+      </div>
+      <h2 className="text-2xl font-semibold mt-5 text-left">Your Uploaded Memes</h2>
 
       {userMemes.length === 0 ? (
         <p className="text-gray-500 text-center mt-4">You haven’t uploaded any memes yet.</p>
@@ -69,7 +90,7 @@ const Profile = () => {
               <img
                 src={meme.imageUrl}
                 alt={meme.title}
-                className="w-full h-48 object-cover transform hover:scale-105 transition-all duration-300"
+                className="w-full h-96 object-cover transform hover:scale-105 transition-all duration-300"
               />
               <div className="p-4">
                 <h3 className="text-lg font-semibold">{meme.title}</h3>

@@ -7,6 +7,7 @@ import { IoMdSend } from "react-icons/io";
 import InfiniteScroll from "react-infinite-scroll-component";
 import debounce from "lodash.debounce";
 import { motion } from "framer-motion";
+import { TbBrandFeedly } from "react-icons/tb";
 
 const MemeFeed = () => {
   const router = useRouter();
@@ -122,8 +123,8 @@ const MemeFeed = () => {
   };
 
   return (
-    <div className="py-20">
-      <h2 className="text-2xl font-bold text-center mb-4">Meme Feed</h2>
+    <div className="py-24">
+      <h2 className="text-4xl text-blue-500 font-bold text-center mb-4 flex items-center justify-center gap-2"><TbBrandFeedly /> Meme Feed</h2>
 
       <div className="flex flex-wrap gap-4 justify-center mb-6">
         <input
@@ -152,7 +153,7 @@ const MemeFeed = () => {
         hasMore={hasMore}
         loader={<p className="text-center">Loading more memes...</p>}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-6 py-6">
           {filteredMemes.map((meme) => (
             <motion.div
               key={meme.id}
@@ -160,7 +161,7 @@ const MemeFeed = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <img src={meme.imageUrl} alt={meme.title} className="w-full rounded-md" />
+              <img src={meme.imageUrl} alt={meme.title} className="w-full h-96 object-cover rounded-md" />
               <h3 className="text-lg font-semibold mt-2">{meme.title}</h3>
               <p className="text-gray-600">Uploaded by: {meme.user}</p>
 
@@ -176,7 +177,7 @@ const MemeFeed = () => {
 
               <div className="mt-3">
                 <h4 className="font-bold">Comments:</h4>
-                <div className="max-h-40 overflow-y-auto border p-2 rounded-md">
+                <div className="max-h-20 overflow-y-auto border p-2 rounded-md">
                   {meme.comments && meme.comments.length > 0 ? (
                     <ul className="text-gray-700">
                       {meme.comments.map((comment, index) => (

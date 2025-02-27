@@ -18,7 +18,7 @@ const TopMemes = () => {
   }, []);
 
   return (
-    <div className="py-20 px-4 md:px-8">
+    <div className="py-24 px-4 md:px-8">
       <motion.h2
         className="text-3xl font-bold text-center text-blue-600 mb-10"
         initial={{ opacity: 0 }}
@@ -41,7 +41,7 @@ const TopMemes = () => {
               <motion.img
                 src={meme.imageUrl}
                 alt={meme.title}
-                className="w-full h-48 object-cover rounded-md mb-4"
+                className="w-full h-96 object-cover rounded-md mb-4"
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.3 }}
               />

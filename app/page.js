@@ -111,8 +111,8 @@ const Home = () => {
   };
 
   return (
-    <div className="py-20">
-      <h2 className="text-3xl font-semibold text-center mb-8">🔥 Trending Memes</h2>
+    <div className="py-24">
+      <h2 className="text-4xl font-semibold text-center mb-8 text-blue-500">🔥 Trending Memes</h2>
 
       <InfiniteScroll
         dataLength={memes.length}

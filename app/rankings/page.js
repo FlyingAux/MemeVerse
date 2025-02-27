@@ -32,7 +32,7 @@ const Rankings = () => {
   }, []);
 
   return (
-    <div className="py-20 px-4 md:px-8">
+    <div className="py-24 px-4 md:px-8">
       <motion.h2
         className="text-3xl font-bold text-center mb-10 text-blue-600"
         initial={{ opacity: 0 }}
@@ -53,14 +53,14 @@ const Rankings = () => {
               transition={{ duration: 0.6, delay: index * 0.2 }}
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className="text-xl font-semibold text-gray-700">#{index + 1}</div>
-                <div className="text-lg font-medium text-blue-600">{entry.user}</div>
+                <div className="text-3xl font-semibold text-gray-700">#{index + 1}</div>
+                <div className="text-3xl capitalize font-medium text-blue-600">{entry.user}</div>
               </div>
 
               <motion.img
                 src={entry.meme.imageUrl}
                 alt={entry.meme.title}
-                className="w-full h-48 object-cover rounded-md mb-4 transition-transform duration-300 hover:scale-105"
+                className="w-full h-96 object-cover rounded-md mb-4 transition-transform duration-300 hover:scale-105"
                 whileHover={{ scale: 1.05 }}
               />
 

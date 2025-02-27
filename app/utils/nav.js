@@ -5,7 +5,6 @@ import { IoMdHome } from "react-icons/io";
 import { FaRankingStar } from "react-icons/fa6";
 import { FiTrendingUp } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
-import { IoIosSearch } from "react-icons/io";
 import LoginModal from "./LoginModal";
 import { AiOutlineClose } from "react-icons/ai";
 import { motion } from "framer-motion";
@@ -31,53 +30,49 @@ const Nav = () => {
     <>
   
       <motion.div
-        className="nav-main h-20 w-full flex items-center justify-between text-xl fixed z-50 bg-white shadow-md px-4 sm:px-20 sm:flex hidden"
+        className="nav-main h-20 w-full flex items-center bg-white justify-between text-xl fixed z-50 px-4 sm:px-20 sm:flex hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.4 }}
       >
-        <div className="nav-left h-20 flex items-center justify-start gap-5 overflow-hidden sm:flex">
+        <div className="nav-left h-20 flex items-center justify-start gap-8 text-xl overflow-hidden sm:flex">
  
           <motion.div
-            className="flex items-center gap-2"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 150 }}
+            transition={{ delay: 0.1, type: "spring", stiffness: 150 }}
           >
-            <Link href="/">
+            <Link href="/"  className="flex items-center justify-center gap-2 border-[1px] border-black py-3 px-5 rounded-full hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
               <IoMdHome /> Home
             </Link>
           </motion.div>
 
           <motion.div
-            className="flex items-center gap-2"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, type: "spring", stiffness: 150 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 150 }}
           >
-            <Link href="/top">
+            <Link href="/top"  className="flex items-center justify-center gap-2 border-[1px] border-black py-3 px-5 rounded-full  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
               <FaStar /> Top
             </Link>
           </motion.div>
 
           <motion.div
-            className="flex items-center gap-2"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, type: "spring", stiffness: 150 }}
+            transition={{ delay: 0.3, type: "spring", stiffness: 150 }}
           >
-            <Link href="/memeFeed">
+            <Link href="/memeFeed"  className="flex items-center justify-center gap-2 border-[1px] border-black py-3 px-5 rounded-full  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
               <FiTrendingUp /> Explore
             </Link>
           </motion.div>
 
           <motion.div
-            className="flex items-center gap-2"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, type: "spring", stiffness: 150 }}
+            transition={{ delay: 0.4, type: "spring", stiffness: 150 }}
           >
-            <Link href="/rankings">
+            <Link href="/rankings"  className="flex items-center justify-center gap-2 border-[1px] border-black py-3 px-5 rounded-full  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
               <FaRankingStar /> Rankings
             </Link>
           </motion.div>
@@ -89,7 +84,7 @@ const Nav = () => {
             className="flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1, type: "spring", stiffness: 150 }}
+            transition={{ delay: 0.5, type: "spring", stiffness: 150 }}
           >
           </motion.div>
 
@@ -100,9 +95,9 @@ const Nav = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1.2, type: "spring", stiffness: 150 }}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 0.6 }}
               >
-                <Link href="/profile">Profile ({user.username})</Link>
+                <Link href="/profile">Profile</Link>
               </motion.div>
 
               <motion.button
@@ -110,7 +105,7 @@ const Nav = () => {
                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.4, type: "spring", stiffness: 150 }}
+                transition={{ delay: 0.7, type: "spring", stiffness: 150 }}
                 whileHover={{ scale: 1.05 }}
               >
                 Logout
@@ -122,7 +117,7 @@ const Nav = () => {
               className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.6, type: "spring", stiffness: 150 }}
+              transition={{ delay: 0.8, type: "spring", stiffness: 150, easing: "easeInOut"}}
               whileHover={{ scale: 1.05 }}
             >
               Login/Sign-up
