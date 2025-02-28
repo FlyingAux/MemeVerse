@@ -112,7 +112,7 @@ const Nav = () => {
                 className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.2, type: "spring", stiffness: 150 }}
+                transition={{ delay: 0.8, type: "spring", stiffness: 150 }}
                 whileHover={{ scale: 0.6 }}
               >
                 <Link href="/profile">Profile</Link>
@@ -123,7 +123,7 @@ const Nav = () => {
                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.7, type: "spring", stiffness: 150 }}
+                transition={{ delay: 1, type: "spring", stiffness: 150 }}
                 whileHover={{ scale: 1.05 }}
               >
                 Logout
@@ -135,7 +135,7 @@ const Nav = () => {
               className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.8, type: "spring", stiffness: 150, easing: "easeInOut"}}
+              transition={{ delay: 1, type: "spring", stiffness: 150, easing: "easeInOut"}}
               whileHover={{ scale: 1.05 }}
             >
               Login/Sign-up
@@ -146,7 +146,7 @@ const Nav = () => {
             className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1.8, type: "spring", stiffness: 150 }}
+            transition={{ delay: 1.4, type: "spring", stiffness: 150 }}
             whileHover={{ scale: 1.05 }}
           >
             <Link href="/memeUpload">Upload Meme</Link>
