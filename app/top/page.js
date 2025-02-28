@@ -21,7 +21,7 @@ const TopMemes = () => {
   }, []);
 
   return (
-    <div className="py-24 px-4 md:px-8 bg-gradient-to-b from-blue-50 to-white min-h-screen">
+    <div className="py-24 px-4 md:px-8 bg-gradient-to-b from-blue-50 to-white dark:bg-gradient-to-b dark:from-purple-300 dark:to-white min-h-screen">
       <motion.div
         className="max-w-6xl mx-auto"
         initial={{ opacity: 0 }}

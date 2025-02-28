@@ -211,7 +211,7 @@ const MemeFeed = () => {
   };
 
   return (
-    <div className="py-24 px-4 bg-gray-50 min-h-screen">
+    <div className="py-24 px-4 bg-gray-50 dark:bg-purple-300 min-h-screen">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-4xl text-purple-600 font-bold text-center mb-8 flex items-center justify-center gap-3">
           <TbBrandFeedly className="text-5xl" /> 
@@ -224,7 +224,7 @@ const MemeFeed = () => {
               type="text"
               placeholder="Search memes..."
               onChange={(e) => handleSearch(e.target.value)}
-              className="border border-gray-300 p-3 pl-10 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none transition-all"
+              className="border border-gray-300 p-3 pl-10 rounded-lg shadow-sm focus:ring-2 dark:bg-white dark:text-black focus:ring-purple-400 focus:border-purple-400 outline-none transition-all"
             />
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-3 top-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -234,7 +234,7 @@ const MemeFeed = () => {
           <select 
             onChange={(e) => handleSortChange(e.target.value)} 
             value={sortBy}
-            className="border border-gray-300 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none bg-white transition-all"
+            className="border dark:bg-white dark:text-black border-gray-300 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none bg-white transition-all"
           >
             <option value="date">Newest First</option>
             <option value="likes">Most Liked</option>
@@ -244,7 +244,7 @@ const MemeFeed = () => {
           <select 
             onChange={(e) => handleCategoryChange(e.target.value)} 
             value={category}
-            className="border border-gray-300 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none bg-white transition-all"
+            className="border dark:bg-white dark:text-black border-gray-300 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none bg-white transition-all"
           >
             {categories.map(cat => (
               <option key={cat} value={cat}>{cat}</option>
@@ -286,7 +286,7 @@ const MemeFeed = () => {
                   key={meme.id}
                   variants={itemVariants}
                   layout
-                  className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+                  className="bg-white  rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
                 >
                   <div className="relative overflow-hidden">
                     <img 
@@ -318,7 +318,7 @@ const MemeFeed = () => {
                         <span className="font-medium">{meme.likes || 0}</span>
                       </button>
                       
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 ">
                         {meme.comments?.length || 0} comments
                       </span>
                     </div>
@@ -350,7 +350,7 @@ const MemeFeed = () => {
                           [meme.id]: e.target.value 
                         })}
                         placeholder="Add a comment..."
-                        className="border border-gray-300 rounded-lg p-2 flex-1 text-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none"
+                        className="border border-gray-300 dark:bg-white dark:text-black rounded-lg p-2 flex-1 text-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') handleComment(meme.id);
                         }}

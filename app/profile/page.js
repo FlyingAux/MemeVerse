@@ -45,7 +45,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="py-16 px-6 md:px-12 max-w-6xl mx-auto">
+    <div className="py-16 px-6 md:px-12 max-w-6xl mx-auto dark:bg-purple-300">
       <div className="flex flex-col gap-3 items-center justify-center h-auto w-full bg-gradient-to-r from-blue-400 to-purple-500 text-white p-5 rounded-xl shadow-lg md:h-80">
         <div className="h-20 w-20 border-4 border-white rounded-full bg-blue-600 flex items-center justify-center text-3xl font-bold">
           {user.username.charAt(0).toUpperCase()}

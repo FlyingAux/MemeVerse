@@ -10,6 +10,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import { motion } from "framer-motion";
 import { RiMenu3Line } from "react-icons/ri";
 import { CgProfile } from "react-icons/cg";
+import { useTheme } from "next-themes";
 
 const Nav = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,23 +28,39 @@ const Nav = () => {
     window.location.href = "/";
   };
 
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null
+
   return (
     <>
   
       <motion.div
-        className="nav-main h-20 w-full flex items-center bg-zinc-100 justify-between text-xl fixed z-50 px-4 sm:px-20 sm:flex hidden"
+        className="nav-main h-20 w-full flex items-center bg-zinc-100 dark:bg-purple-300 justify-between text-xl fixed z-50 px-4 sm:px-20 sm:flex hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4 }}
       >
         <div className="nav-left h-20 flex items-center justify-start gap-8 text-xl overflow-hidden sm:flex">
+
+        <button
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+    >
+      {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
+    </button>
  
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, type: "spring", stiffness: 150 }}
           >
-            <Link href="/"  className="flex items-center justify-center gap-2 border-[1px] border-black py-3 px-5 rounded-full hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
+            <Link href="/"  className="flex items-center justify-center gap-2 border-[1px] border-black dark:border-white py-3 px-5 rounded-full hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
               <IoMdHome /> Home
             </Link>
           </motion.div>
@@ -53,7 +70,7 @@ const Nav = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 150 }}
           >
-            <Link href="/top"  className="flex items-center justify-center gap-2 border-[1px] border-black py-3 px-5 rounded-full  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
+            <Link href="/top"  className="flex items-center justify-center gap-2 border-[1px] border-black dark:border-white py-3 px-5 rounded-full  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
               <FaStar /> Top
             </Link>
           </motion.div>
@@ -63,7 +80,7 @@ const Nav = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, type: "spring", stiffness: 150 }}
           >
-            <Link href="/memeFeed"  className="flex items-center justify-center gap-2 border-[1px] border-black py-3 px-5 rounded-full  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
+            <Link href="/memeFeed"  className="flex items-center justify-center gap-2 border-[1px] border-black dark:border-white py-3 px-5 rounded-full  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
               <FiTrendingUp /> Explore
             </Link>
           </motion.div>
@@ -73,7 +90,7 @@ const Nav = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, type: "spring", stiffness: 150 }}
           >
-            <Link href="/rankings"  className="flex items-center justify-center gap-2 border-[1px] border-black py-3 px-5 rounded-full  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
+            <Link href="/rankings"  className="flex items-center justify-center gap-2 border-[1px] border-black dark:border-white py-3 px-5 rounded-full  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
               <FaRankingStar /> Rankings
             </Link>
           </motion.div>
@@ -138,7 +155,8 @@ const Nav = () => {
       </motion.div>
 
       {/* Mobile Menu Button */}
-      <div className="sm:hidden flex items-center justify-between p-5 w-full bg-zinc-100 fixed z-50">
+      <div className="sm:hidden flex items-center justify-between p-5 w-full bg-zinc-100 dark:bg-purple-300 fixed z-50">
+
         
         {isMobileMenuOpen ? (
           <motion.button
@@ -161,13 +179,13 @@ const Nav = () => {
            <RiMenu3Line />
           </motion.button>
         )}
-        <h1 className="text-2xl tracking-wider font-bold text-purple-500">MemeVerse</h1>
+        <h1 className="text-2xl tracking-wider font-bold text-purple-500 ">MemeVerse</h1>
       </div>
 
 
       {isMobileMenuOpen && (
         <motion.div
-          className="sm:hidden flex flex-col items-start justify-start gap-3 px-3 py-3 w-1/2 bg-zinc-100 h-screen top-16 fixed z-50"
+          className="sm:hidden flex flex-col items-start justify-start gap-3 px-3 py-3 w-1/2 bg-zinc-100 dark:bg-purple-300 h-screen top-16 fixed z-50"
           initial={{ x: "-100%" }}
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
@@ -250,10 +268,22 @@ const Nav = () => {
             >
               Login/Sign-up
             </motion.button>
-          )}
-        </motion.div>
-      )}
 
+          )}
+
+          <motion.button
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 mt-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.8 }}
+          >
+          {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
+          </motion.button>
+        </motion.div>
+        
+      )}
+      
       <LoginModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

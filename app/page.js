@@ -127,16 +127,33 @@ const Home = () => {
   };
 
   return (
-    <div className="py-24 bg-gradient-to-b from-purple-50 to-white min-h-screen">
+    <div className="py-24 bg-gradient-to-b from-purple-50 to-white dark:bg-gradient-to-b dark:from-purple-300 dark:to-white min-h-screen">
       <div className="container mx-auto px-4">
-        <motion.h2 
-          className="text-4xl font-bold text-center text-purple-600 mb-8 tracking-tight"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+      <div className="flex items-center justify-center h-96 rounded-xl bg-purple-100 dark:bg-purple-400 text-gray-900 px-6 mb-3 text-center">
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="max-w-3xl"
+      >
+       <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 1 }}
+          className="mt-6 text-4xl font-semibold text-purple-500 dark:text-white"
         >
-          🔥 Trending Memes
-        </motion.h2>
+          Welcome to MemeVerse! The ultimate destination for meme lovers 🎉
+        </motion.p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.8 }}
+          className="mt-4 text-lg text-gray-700"
+        >
+          Explore, upload, and interact with trending memes in a fun and engaging way. Like, comment, and rank the best memes!
+        </motion.p>
+      </motion.div>
+    </div>
 
         <InfiniteScroll
           dataLength={memes.length}
