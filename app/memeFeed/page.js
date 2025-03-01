@@ -372,7 +372,7 @@ const MemeFeed = () => {
                            ))}
                          </ul>
                        ) : (
-                         <p className="text-gray-100 text-center py-2 text-sm">No comments yet. Be the first!</p>
+                         <p className="text-black dark:text-white text-center py-2 text-sm">No comments yet. Be the first!</p>
                        )}
                      </div>
                    </div>
