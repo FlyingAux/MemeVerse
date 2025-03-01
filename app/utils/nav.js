@@ -41,7 +41,7 @@ const Nav = () => {
     <>
   
       <motion.div
-        className="nav-main h-20 w-full flex items-center bg-zinc-100 dark:bg-purple-300 justify-between text-xl fixed z-50 px-4 sm:px-20 sm:flex hidden"
+        className="nav-main h-20 w-full flex items-center bg-purple-100 dark:bg-purple-300 justify-between text-xl fixed z-50 px-4 sm:px-20 sm:flex hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4 }}
@@ -50,7 +50,7 @@ const Nav = () => {
 
         <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+      className="px-3 py-1 rounded-lg bg-gray-400 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
     >
       {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
     </button>
@@ -60,7 +60,7 @@ const Nav = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, type: "spring", stiffness: 150 }}
           >
-            <Link href="/"  className="flex items-center justify-center gap-2 border-[1px] border-black dark:border-white py-3 px-5 rounded-full hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
+            <Link href="/"  className="flex items-center justify-center gap-2 border-[1px] border-black dark:border-white py-1 px-3 rounded-lg hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
               <IoMdHome /> Home
             </Link>
           </motion.div>
@@ -70,7 +70,7 @@ const Nav = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 150 }}
           >
-            <Link href="/top"  className="flex items-center justify-center gap-2 border-[1px] border-black dark:border-white py-3 px-5 rounded-full  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
+            <Link href="/top"  className="flex items-center justify-center gap-2 border-[1px] border-black dark:border-white py-1 px-3 rounded-lg  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
               <FaStar /> Top
             </Link>
           </motion.div>
@@ -80,7 +80,7 @@ const Nav = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, type: "spring", stiffness: 150 }}
           >
-            <Link href="/memeFeed"  className="flex items-center justify-center gap-2 border-[1px] border-black dark:border-white py-3 px-5 rounded-full  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
+            <Link href="/memeFeed"  className="flex items-center justify-center gap-2 border-[1px] border-black dark:border-white py-1 px-3 rounded-lg  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
               <FiTrendingUp /> Explore
             </Link>
           </motion.div>
@@ -90,7 +90,7 @@ const Nav = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, type: "spring", stiffness: 150 }}
           >
-            <Link href="/rankings"  className="flex items-center justify-center gap-2 border-[1px] border-black dark:border-white py-3 px-5 rounded-full  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
+            <Link href="/rankings"  className="flex items-center justify-center gap-2 border-[1px] border-black dark:border-white py-1 px-3 rounded-lg  hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
               <FaRankingStar /> Rankings
             </Link>
           </motion.div>
@@ -109,18 +109,17 @@ const Nav = () => {
           {user ? (
             <>
               <motion.div
-                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                className="bg-blue-400 text-black px-3 py-1 rounded-md hover:bg-blue-600"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.8, type: "spring", stiffness: 150 }}
-                whileHover={{ scale: 0.6 }}
               >
                 <Link href="/profile">Profile</Link>
               </motion.div>
 
               <motion.button
                 onClick={handleLogout}
-                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                className="bg-red-400 text-black px-3 py-1 rounded-md hover:bg-red-600"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1, type: "spring", stiffness: 150 }}
@@ -132,7 +131,7 @@ const Nav = () => {
           ) : (
             <motion.button
               onClick={() => setIsModalOpen(true)}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              className="bg-blue-500 text-black px-3 py-1 rounded-md hover:bg-blue-600"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 1, type: "spring", stiffness: 150, easing: "easeInOut"}}
@@ -143,7 +142,7 @@ const Nav = () => {
           )}
 
           <motion.div
-            className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600"
+            className="bg-purple-400 text-black px-3 py-1 rounded-md hover:bg-purple-600"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.4, type: "spring", stiffness: 150 }}
@@ -240,7 +239,7 @@ const Nav = () => {
           )}
 
           <motion.div
-            className="text-lg py-2 px-3 mt-3 rounded-xl bg-purple-500 text-white hover:text-purple-600"
+            className="text-lg py-1 px-3 rounded-xl bg-purple-400 text-black hover:text-purple-600"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
@@ -251,7 +250,7 @@ const Nav = () => {
           {user ? (
             <motion.button
               onClick={handleLogout}
-              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 shadow-lg mt-4"
+              className="bg-red-400 text-black px-3 py-1 rounded-md hover:bg-red-600"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.4 }}
@@ -273,7 +272,7 @@ const Nav = () => {
 
           <motion.button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 mt-2"
+            className="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.8 }}
