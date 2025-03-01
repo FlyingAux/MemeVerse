@@ -11,6 +11,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaRegComment } from "react-icons/fa";
 import { TbLocationShare } from "react-icons/tb";
 import CommentsModal from './utils/commentModal';
+import { toast, ToastContainer, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import styles
 
 const Home = () => {
   
@@ -135,7 +137,17 @@ const Home = () => {
 
  const handleLikeToggle = async (meme) => {
   if (!user) {
-    alert("You must be logged in to like memes!");
+    toast.info('🚀 Login first to like memes!', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+      });
     return;
   }
 
@@ -177,7 +189,17 @@ const Home = () => {
 
 const handleComment = async (memeId) => {
   if (!user) {
-    alert("You must be logged in to comment.");
+    toast.info('💬 Login to share your thoughts!', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+      });
     return;
   }
 
@@ -236,7 +258,9 @@ const handleComment = async (memeId) => {
 
 
   return (
+    
     <div className="py-24 px-4 bg-slate-50 dark:bg-purple-300 min-h-screen">
+      <ToastContainer />
       <div className="max-w-7xl mx-auto">
 
       <div className="flex items-center justify-center h-96 rounded-xl bg-purple-100 dark:bg-purple-400 text-gray-900 px-6 mb-3 text-center">

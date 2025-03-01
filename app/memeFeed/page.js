@@ -11,6 +11,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaRegComment } from "react-icons/fa";
 import { TbLocationShare } from "react-icons/tb";
 import CommentsModal from '../utils/commentModal';
+import { toast, ToastContainer, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
 
 const MemeFeed = () => {
   const router = useRouter();
@@ -45,8 +47,22 @@ const MemeFeed = () => {
     const storedUser = JSON.parse(localStorage.getItem("loggedInUser"));
     
     if (!storedUser) {
-      alert("You must be logged in to access Explore memes!");
-      router.push("/");
+      toast.info("🚀 Please log in to Explore memes!", {
+        position: "top-right",
+        autoClose: 2000, // Wait for 3 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
+      });
+
+      
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
+
       return;
     }
     
@@ -226,6 +242,7 @@ const MemeFeed = () => {
 
   return (
     <div className="py-24 px-4 bg-gray-50 dark:bg-purple-300 min-h-screen">
+      <ToastContainer />
       <div className="max-w-7xl mx-auto">
         <h2 className="text-4xl text-purple-600 font-bold text-center mb-8 flex items-center justify-center gap-3">
           <TbBrandFeedly className="text-5xl" /> 

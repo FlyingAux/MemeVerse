@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { addMeme } from "../utils/indexedDB";
 import LoginModal from "../utils/LoginModal";
 import { motion } from "framer-motion";
+import { toast, ToastContainer, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
 
 const UploadMeme = () => {
   const [image, setImage] = useState(null);
@@ -17,6 +19,7 @@ const UploadMeme = () => {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [topText, setTopText] = useState("");
   const [bottomText, setBottomText] = useState("");
+  
 
   const router = useRouter();
 
@@ -26,7 +29,22 @@ const UploadMeme = () => {
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       } else {
-        setShowLoginModal(true);
+        toast.info("🚀 Please log in to upload memes!", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light",
+          transition: Bounce,
+        });
+  
+     
+        setTimeout(() => {
+          router.push("/");
+        }, 2000); 
+        return;
       }
     }
   }, []);
@@ -66,7 +84,16 @@ const UploadMeme = () => {
 
   const uploadImage = async () => {
     if (!isConfirmed) {
-      alert("Please confirm before uploading.");
+      toast.info("Please confirm before uploading!!", {
+              position: "top-right",
+              autoClose: 2000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              theme: "light",
+              transition: Bounce,
+            });
       return;
     }
     setLoading(true);
@@ -85,13 +112,31 @@ const UploadMeme = () => {
         if (data.success) {
           imageUrl = data.data.url;
         } else {
-          alert("Failed to upload image.");
+          toast.error("Failed to Upload!", {
+                  position: "top-right",
+                  autoClose: 2000, // Wait for 3 seconds
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  theme: "light",
+                  transition: Bounce,
+                });
           setLoading(false);
           return;
         }
       } catch (error) {
         console.error("Upload error:", error);
-        alert("Error uploading image.");
+        toast.error("Failed to Upload!", {
+                position: "top-right",
+                autoClose: 2000, // Wait for 3 seconds
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "light",
+                transition: Bounce,
+              });
         setLoading(false);
         return;
       }
@@ -112,13 +157,28 @@ const UploadMeme = () => {
     setImagePreview(null);
     setSelectedTemplate(null);
     setIsConfirmed(false);
-    alert("Meme uploaded successfully!");
+    toast.success("Meme uploaded successfully!!", {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "light",
+            transition: Bounce,
+          });
+    
+          
+          setTimeout(() => {
+            router.push("/profile");
+          }, 2000);
     setLoading(false);
-    router.push("/profile");
+    
   };
 
   return (
     <div className="py-24 flex flex-col items-center max-w-3xl mx-auto p-8 bg-purple-100 dark:bg-purple-400 shadow-xl rounded-xl border border-slate-200 dark:border-white">
+       <ToastContainer />
       <motion.h2 className="text-3xl font-extrabold mb-6 text-purple-500 dark:text-white">Upload or Generate Meme</motion.h2>
       {user ? (
         <>

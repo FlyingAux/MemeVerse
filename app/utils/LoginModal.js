@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { IoMdClose } from "react-icons/io";
 import { motion } from "framer-motion";
+import { toast, ToastContainer, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
 
 const LoginModal = ({ isOpen, onClose, onLogin }) => {
   const [isSignup, setIsSignup] = useState(false);
@@ -80,7 +82,17 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
       users.push({ username, email, phone, password });
       localStorage.setItem("users", JSON.stringify(users));
 
-      alert("Account created successfully!");
+      toast.success('Account successfully Created', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+        });
       setIsSignup(false);
     } else {
       const validUser = users.find(
@@ -108,20 +120,21 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
+      <ToastContainer />
       <motion.div
-        className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm relative"
+        className="bg-purple-100 dark:bg-purple-400 p-6 rounded-lg shadow-lg w-full max-w-sm relative"
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
       >
         <button
-          className="absolute top-3 right-3 text-gray-600 hover:text-red-500 text-2xl"
+          className="absolute top-3 right-3 text-gray-600 dark:text-white hover:text-red-500 text-2xl"
           onClick={onClose}
         >
           <IoMdClose />
         </button>
 
-        <h2 className="text-2xl font-semibold text-center mb-4 text-gray-800">
+        <h2 className="text-2xl font-semibold text-center mb-4 text-gray-800 dark:text-white">
           {isSignup ? "Sign Up" : "Login"}
         </h2>
 
@@ -132,7 +145,7 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
               placeholder="Email"
               value={email}
               onChange={(e) => handleInputChange("email", e.target.value)}
-              className="border p-3 w-full my-2 rounded-md focus:ring-2 focus:ring-blue-500"
+              className="border p-3 w-full my-2 rounded-md dark:bg-purple-50 dark:text-black  focus:ring-2 focus:ring-purple-500"
             />
             {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
 
@@ -141,7 +154,7 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
               placeholder="Phone Number"
               value={phone}
               onChange={(e) => handleInputChange("phone", e.target.value)}
-              className="border p-3 w-full my-2 rounded-md focus:ring-2 focus:ring-blue-500"
+              className="border p-3 w-full my-2 rounded-md dark:bg-purple-50 dark:text-black  focus:ring-2 focus:ring-purple-500"
             />
             {errors.phone && <p className="text-red-500 text-xs">{errors.phone}</p>}
           </>
@@ -152,7 +165,7 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
           placeholder="Username"
           value={username}
           onChange={(e) => handleInputChange("username", e.target.value)}
-          className="border p-3 w-full my-2 rounded-md focus:ring-2 focus:ring-blue-500"
+          className="border p-3 w-full my-2 rounded-md dark:bg-purple-50 dark:text-black  focus:ring-2 focus:ring-purple-500"
         />
         {errors.username && <p className="text-red-500 text-xs">{errors.username}</p>}
 
@@ -161,20 +174,20 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
           placeholder="Password"
           value={password}
           onChange={(e) => handleInputChange("password", e.target.value)}
-          className="border p-3 w-full my-2 rounded-md focus:ring-2 focus:ring-blue-500"
+          className="border p-3 w-full my-2 rounded-md dark:bg-purple-50 dark:text-black  focus:ring-2 focus:ring-purple-500"
         />
         {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
 
         <motion.button
           onClick={handleAuth}
-          className="bg-blue-500 text-white px-4 py-2 w-full rounded-md hover:bg-blue-600 transition-all duration-200 mt-4"
+          className="bg-purple-500 text-black dark:text-white px-4 py-2 w-full rounded-md hover:bg-purple-600 transition-all duration-200 mt-4"
           whileHover={{ scale: 1.05 }}
         >
           {isSignup ? "Sign Up" : "Login"}
         </motion.button>
 
         <motion.p
-          className="text-sm text-blue-500 mt-2 text-center cursor-pointer"
+          className="text-lg hover:text-black dark:hover:text-white text-black dark:text-white mt-3 text-center cursor-pointer"
           onClick={() => setIsSignup(!isSignup)}
           whileHover={{ color: "#3B82F6" }}
         >
