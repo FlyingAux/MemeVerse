@@ -114,7 +114,7 @@ const UploadMeme = () => {
         } else {
           toast.error("Failed to Upload!", {
                   position: "top-right",
-                  autoClose: 2000, // Wait for 3 seconds
+                  autoClose: 2000, 
                   hideProgressBar: false,
                   closeOnClick: true,
                   pauseOnHover: true,
@@ -129,7 +129,7 @@ const UploadMeme = () => {
         console.error("Upload error:", error);
         toast.error("Failed to Upload!", {
                 position: "top-right",
-                autoClose: 2000, // Wait for 3 seconds
+                autoClose: 2000, 
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,

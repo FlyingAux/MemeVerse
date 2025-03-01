@@ -49,7 +49,7 @@ const MemeFeed = () => {
     if (!storedUser) {
       toast.info("🚀 Please log in to Explore memes!", {
         position: "top-right",
-        autoClose: 2000, // Wait for 3 seconds
+        autoClose: 2000, 
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
