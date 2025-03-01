@@ -118,8 +118,8 @@ const UploadMeme = () => {
   };
 
   return (
-    <div className="py-24 flex flex-col items-center max-w-3xl mx-auto p-8 bg-white shadow-xl rounded-xl border border-gray-200">
-      <motion.h2 className="text-3xl font-extrabold mb-6 text-purple-500">Upload or Generate Meme</motion.h2>
+    <div className="py-24 flex flex-col items-center max-w-3xl mx-auto p-8 bg-purple-100 dark:bg-purple-500 shadow-xl rounded-xl border border-slate-200 dark:border-white">
+      <motion.h2 className="text-3xl font-extrabold mb-6 text-purple-500 dark:text-white">Upload or Generate Meme</motion.h2>
       {user ? (
         <>
           <motion.input
@@ -134,7 +134,7 @@ const UploadMeme = () => {
             type="file"
             accept="image/*"
             onChange={handleImageChange}
-            className="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border border-black dark:border-white rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-purple-600"
           />
 
           <h3 className="text-lg font-semibold mt-4">Or Choose a Meme Template:</h3>

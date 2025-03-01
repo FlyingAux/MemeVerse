@@ -50,7 +50,7 @@ const Nav = () => {
 
         <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="px-3 py-1 rounded-lg bg-gray-400 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+      className="px-3 py-1 rounded-lg bg-purple-400 dark:bg-purple-400 text-gray-800 dark:text-gray-200"
     >
       {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
     </button>
@@ -109,7 +109,7 @@ const Nav = () => {
           {user ? (
             <>
               <motion.div
-                className="bg-blue-400 text-black px-3 py-1 rounded-md hover:bg-blue-600"
+                className="bg-blue-400 text-black dark:text-white px-3 py-1 rounded-md hover:bg-blue-600"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.8, type: "spring", stiffness: 150 }}
@@ -119,7 +119,7 @@ const Nav = () => {
 
               <motion.button
                 onClick={handleLogout}
-                className="bg-red-400 text-black px-3 py-1 rounded-md hover:bg-red-600"
+                className="bg-red-400 text-black dark:text-white px-3 py-1 rounded-md hover:bg-red-600"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1, type: "spring", stiffness: 150 }}
@@ -131,7 +131,7 @@ const Nav = () => {
           ) : (
             <motion.button
               onClick={() => setIsModalOpen(true)}
-              className="bg-blue-500 text-black px-3 py-1 rounded-md hover:bg-blue-600"
+              className="bg-blue-500 text-black dark:text-white px-3 py-1 rounded-md hover:bg-blue-600"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 1, type: "spring", stiffness: 150, easing: "easeInOut"}}
@@ -142,7 +142,7 @@ const Nav = () => {
           )}
 
           <motion.div
-            className="bg-purple-400 text-black px-3 py-1 rounded-md hover:bg-purple-600"
+            className="bg-purple-400 text-black dark:text-white px-3 py-1 rounded-md hover:bg-purple-600"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.4, type: "spring", stiffness: 150 }}
@@ -234,12 +234,12 @@ const Nav = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
             >
-              <Link href="/profile" className="flex items-center justify-center gap-2"> <span className="text-purple-500"><CgProfile /></span> Profile</Link>
+              <Link href="/profile" className="flex items-center justify-center gap-2 "> <span className="text-purple-500"><CgProfile /></span> Profile</Link>
             </motion.div>
           )}
 
           <motion.div
-            className="text-lg py-1 px-3 rounded-xl bg-purple-400 text-black hover:text-purple-600"
+            className="text-lg py-1 px-3 rounded-xl bg-purple-400 text-black dark:text-white hover:text-purple-600"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
@@ -250,7 +250,7 @@ const Nav = () => {
           {user ? (
             <motion.button
               onClick={handleLogout}
-              className="bg-red-400 text-black px-3 py-1 rounded-md hover:bg-red-600"
+              className="bg-red-400 text-black dark:text-white px-3 py-1 rounded-md hover:bg-red-600"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.4 }}
@@ -272,7 +272,7 @@ const Nav = () => {
 
           <motion.button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+            className="px-3 py-1 rounded-lg bg-purple-400 dark:bg-purple-400 text-gray-800 dark:text-gray-200"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.8 }}
