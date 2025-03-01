@@ -270,7 +270,7 @@ const MemeFeed = () => {
           next={fetchMoreMemes}
           hasMore={hasMore}
           loader={
-            <div className="flex justify-center my-8">
+            <div className="flex justify-center mt-8">
               <div className="animate-pulse flex space-x-4 items-center">
                 <div className="h-3 w-3 bg-purple-500 rounded-full"></div>
                 <div className="h-3 w-3 bg-purple-500 rounded-full"></div>

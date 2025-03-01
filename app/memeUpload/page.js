@@ -118,7 +118,7 @@ const UploadMeme = () => {
   };
 
   return (
-    <div className="py-24 flex flex-col items-center max-w-3xl mx-auto p-8 bg-purple-100 dark:bg-purple-500 shadow-xl rounded-xl border border-slate-200 dark:border-white">
+    <div className="py-24 flex flex-col items-center max-w-3xl mx-auto p-8 bg-purple-100 dark:bg-purple-400 shadow-xl rounded-xl border border-slate-200 dark:border-white">
       <motion.h2 className="text-3xl font-extrabold mb-6 text-purple-500 dark:text-white">Upload or Generate Meme</motion.h2>
       {user ? (
         <>

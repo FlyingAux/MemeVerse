@@ -6,38 +6,81 @@ import { motion } from "framer-motion";
 const LoginModal = ({ isOpen, onClose, onLogin }) => {
   const [isSignup, setIsSignup] = useState(false);
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (isOpen) {
       setUsername("");
+      setEmail("");
+      setPhone("");
       setPassword("");
-      setError("");
+      setErrors({});
       setIsSignup(false);
     }
   }, [isOpen]);
 
-  const handleAuth = () => {
-    if (!username || !password) {
-      setError("All fields are required!");
-      return;
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validatePhone = (phone) => /^\d{10,}$/.test(phone);
+
+  const handleInputChange = (field, value) => {
+    let newErrors = { ...errors };
+
+    if (field === "username" && !value) newErrors.username = "Username is required!";
+    else delete newErrors.username;
+
+    if (field === "email") {
+      if (!value) newErrors.email = "Email is required!";
+      else if (!validateEmail(value)) newErrors.email = "Invalid email format!";
+      else delete newErrors.email;
     }
+
+    if (field === "phone") {
+      if (!value) newErrors.phone = "Phone number is required!";
+      else if (!validatePhone(value)) newErrors.phone = "Must be at least 10 digits!";
+      else delete newErrors.phone;
+    }
+
+    if (field === "password" && !value) newErrors.password = "Password is required!";
+    else delete newErrors.password;
+
+    setErrors(newErrors);
+
+    switch (field) {
+      case "username":
+        setUsername(value);
+        break;
+      case "email":
+        setEmail(value);
+        break;
+      case "phone":
+        setPhone(value);
+        break;
+      case "password":
+        setPassword(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleAuth = () => {
+    if (Object.keys(errors).length > 0) return;
 
     const users = JSON.parse(localStorage.getItem("users")) || [];
 
     if (isSignup) {
       if (users.some((user) => user.username === username)) {
-        setError("Username already exists!");
+        setErrors({ username: "Username already exists!" });
         return;
       }
-      users.push({ username, password });
-      localStorage.setItem("users", JSON.stringify(users));
-      alert("Account created successfully!");
 
-      setUsername("");
-      setPassword("");
-      setError("");
+      users.push({ username, email, phone, password });
+      localStorage.setItem("users", JSON.stringify(users));
+
+      alert("Account created successfully!");
       setIsSignup(false);
     } else {
       const validUser = users.find(
@@ -45,18 +88,13 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
       );
 
       if (!validUser) {
-        setError("Invalid username or password!");
+        setErrors({ username: "Invalid username or password!" });
         return;
       }
 
       localStorage.setItem("loggedInUser", JSON.stringify(validUser));
       onLogin(validUser);
       onClose();
-
-      setUsername("");
-      setPassword("");
-      setError("");
-
       window.location.href = "/profile";
     }
   };
@@ -87,29 +125,45 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
           {isSignup ? "Sign Up" : "Login"}
         </h2>
 
-        {error && <p className="text-red-500 text-sm mb-2 text-center">{error}</p>}
+        {isSignup && (
+          <>
+            <motion.input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => handleInputChange("email", e.target.value)}
+              className="border p-3 w-full my-2 rounded-md focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
+
+            <motion.input
+              type="tel"
+              placeholder="Phone Number"
+              value={phone}
+              onChange={(e) => handleInputChange("phone", e.target.value)}
+              className="border p-3 w-full my-2 rounded-md focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.phone && <p className="text-red-500 text-xs">{errors.phone}</p>}
+          </>
+        )}
 
         <motion.input
           type="text"
           placeholder="Username"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => handleInputChange("username", e.target.value)}
           className="border p-3 w-full my-2 rounded-md focus:ring-2 focus:ring-blue-500"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
         />
+        {errors.username && <p className="text-red-500 text-xs">{errors.username}</p>}
 
         <motion.input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => handleInputChange("password", e.target.value)}
           className="border p-3 w-full my-2 rounded-md focus:ring-2 focus:ring-blue-500"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
         />
+        {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
 
         <motion.button
           onClick={handleAuth}
