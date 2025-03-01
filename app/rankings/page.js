@@ -48,7 +48,7 @@ const Rankings = () => {
   };
 
   return (
-    <div className="py-24 px-4 md:px-8 bg-gradient-to-b dark:bg-gradient-to-b dark:from-purple-300 dark:to-white from-blue-50 to-white min-h-screen">
+    <div className="py-24 px-4 md:px-8 bg-slate-50 dark:bg-purple-300 min-h-screen">
       <motion.div
         className="max-w-6xl mx-auto"
         initial={{ opacity: 0 }}
@@ -61,10 +61,10 @@ const Rankings = () => {
           animate={{ y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-3">
+          <h2 className="text-4xl md:text-5xl font-bold text-purple-500 mb-3">
             🏆 Meme Leaderboard
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-white text-lg max-w-2xl mx-auto">
             Showcasing the most popular memes from our creative community
           </p>
         </motion.div>
@@ -78,7 +78,7 @@ const Rankings = () => {
             {rankings.map((entry, index) => (
               <motion.div
                 key={entry.user}
-                className="rounded-xl overflow-hidden shadow-xl bg-white transform hover:translate-y-2 transition-all duration-300"
+                className="rounded-xl overflow-hidden shadow-xl bg-purple-100 dark:bg-purple-400 transform hover:translate-y-2 transition-all duration-300"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -101,13 +101,13 @@ const Rankings = () => {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                       {getMedalIcon(index)}
-                      <h3 className="text-2xl capitalize font-bold text-gray-800">
+                      <h3 className="text-2xl capitalize font-bold text-gray-800 dark:text-white">
                         {entry.user}
                       </h3>
                     </div>
                   </div>
 
-                  <h4 className="text-lg font-medium text-gray-700 mb-2">{entry.meme.title}</h4>
+                  <h4 className="text-lg font-medium text-gray-700 dark:text-white mb-2">{entry.meme.title}</h4>
                   
                   <motion.div 
                     className="mt-4 flex justify-between items-center"
@@ -118,7 +118,7 @@ const Rankings = () => {
                       <span className="text-lg">{entry.meme.likes} Likes</span>
                     </div>
                     
-                    <div className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full text-sm cursor-pointer">
+                    <div className="bg-purple-600 hover:bg-purple-800 text-white px-3 py-2 rounded-full text-sm cursor-pointer">
                       View Details
                     </div>
                   </motion.div>

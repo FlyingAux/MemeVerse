@@ -21,7 +21,7 @@ const TopMemes = () => {
   }, []);
 
   return (
-    <div className="py-24 px-4 md:px-8 bg-gradient-to-b from-blue-50 to-white dark:bg-gradient-to-b dark:from-purple-300 dark:to-white min-h-screen">
+    <div className="py-24 px-4 md:px-8 bg-slate-50 dark:bg-purple-300 min-h-screen">
       <motion.div
         className="max-w-6xl mx-auto"
         initial={{ opacity: 0 }}
@@ -34,24 +34,24 @@ const TopMemes = () => {
           animate={{ y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-3">
+          <h2 className="text-4xl md:text-5xl text-purple-600 font-bold mb-3">
             🏆 Top 10 Most Liked Memes
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-white text-lg max-w-2xl mx-auto">
             The cream of the crop - our community's most loved meme creations
           </p>
         </motion.div>
 
         {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          <div className=" flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 "></div>
           </div>
         ) : topMemes.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {topMemes.map((meme, index) => (
               <motion.div
                 key={meme.id}
-                className="rounded-xl overflow-hidden shadow-xl bg-white transform transition-all duration-300"
+                className="rounded-xl overflow-hidden shadow-xl bg-purple-100 dark:bg-purple-400 transform transition-all duration-300"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -83,9 +83,9 @@ const TopMemes = () => {
 
                 <div className="p-6">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-gray-800 truncate">{meme.title}</h3>
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-white truncate">{meme.title}</h3>
                     {meme.user && (
-                      <div className="flex items-center text-blue-600 text-sm">
+                      <div className="flex items-center text-purple-600 text-sm">
                         <FaUser className="mr-1" />
                         <span>{meme.user}</span>
                       </div>
@@ -94,20 +94,20 @@ const TopMemes = () => {
                   
                   <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 mb-4">
                     <div className="flex items-center gap-2 mb-2 text-gray-700">
-                      <FaComment className="text-blue-500" />
-                      <h4 className="font-bold">Top Comments</h4>
+                      <FaComment className="text-black dark:text-purple-500" />
+                      <h4 className="font-bold dark:text-purple-500">Top Comments</h4>
                     </div>
                     
-                    <div className="max-h-32 overflow-y-auto space-y-2">
+                    <div className="max-h-40 bg-white dark:bg-purple-50 overflow-hidden space-y-2 ">
                       {meme.comments && meme.comments.length > 0 ? (
                         meme.comments.slice(0, 3).map((comment, index) => (
                           <motion.div 
                             key={index} 
-                            className="p-2 bg-white rounded-lg shadow-sm"
+                            className="p-2 bg-white dark:bg-purple-100 rounded-lg shadow-sm"
                             whileHover={{ x: 5 }}
                           >
-                            <p className="text-gray-700">
-                              <span className="font-semibold text-blue-600">{comment.user}: </span> 
+                            <p className="text-gray-700 dark:text-purple-500">
+                              <span className="font-semibold dark:text-purple-500">{comment.user}: </span> 
                               {comment.text}
                             </p>
                           </motion.div>
@@ -125,7 +125,7 @@ const TopMemes = () => {
                     </div>
                     
                     <motion.button
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-medium"
+                      className="bg-purple-600 hover:bg-purple-800 text-white px-4 py-2 rounded-full text-sm font-medium"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
