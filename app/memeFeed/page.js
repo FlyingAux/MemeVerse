@@ -8,10 +8,23 @@ import { TbBrandFeedly } from "react-icons/tb";
 import InfiniteScroll from "react-infinite-scroll-component";
 import debounce from "lodash.debounce";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaRegComment } from "react-icons/fa";
+import { TbLocationShare } from "react-icons/tb";
+import CommentsModal from '../utils/commentModal';
 
 const MemeFeed = () => {
   const router = useRouter();
   
+    const [selectedMeme, setSelectedMeme] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openCommentsModal = (meme) => {
+      setSelectedMeme(meme);
+      setIsModalOpen(true);
+    };
+
+
+
   const [allMemes, setAllMemes] = useState([]);
   const [displayedMemes, setDisplayedMemes] = useState([]);
   const [user, setUser] = useState(null);
@@ -286,7 +299,7 @@ const MemeFeed = () => {
                   key={meme.id}
                   variants={itemVariants}
                   layout
-                  className="bg-white  rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+                  className="bg-purple-100 dark:bg-purple-400  rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
                 >
                   <div className="relative overflow-hidden">
                     <img 
@@ -301,45 +314,68 @@ const MemeFeed = () => {
                   </div>
                   
                   <div className="p-4">
-                    <div className="flex items-center gap-3 mb-4">
-                      <button
-                        onClick={() => handleLikeToggle(meme)}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors ${
-                          likedMemes[meme.id] 
-                            ? "text-red-500 bg-red-50 hover:bg-red-100" 
-                            : "text-gray-500 hover:bg-gray-100"
-                        }`}
-                      >
-                        {likedMemes[meme.id] ? (
-                          <FaHeart className="text-xl" />
-                        ) : (
-                          <FaRegHeart className="text-xl" />
-                        )}
-                        <span className="font-medium">{meme.likes || 0}</span>
-                      </button>
-                      
-                      <span className="text-sm text-gray-500 ">
-                        {meme.comments?.length || 0} comments
-                      </span>
-                    </div>
+                     <div className="flex items-center justify-start gap-3">
+                                          <button
+                                            onClick={() => handleLikeToggle(meme)}
+                                            className={`flex items-center gap-2 rounded-full transition-colors ${
+                                              likedMemes[meme.id] 
+                                                ? "text-red-500 " 
+                                                : "text-gray-500 "
+                                            }`}
+                                          >
+                                            {likedMemes[meme.id] ? (
+                                              <FaHeart className="text-2xl" />
+                                            ) : (
+                                              <FaRegHeart className="text-2xl text-black dark:text-red-50" />
+                                            )}
+                                          </button>
+                                          
+                                          
+                                          <button onClick={() => openCommentsModal(meme)} className="text-2xl text-black dark:text-red-50 ">
+                                            <FaRegComment />
+                                          </button>
                     
-                    <div className="mb-4">
-                      <h4 className="font-bold text-gray-700 mb-2">Comments</h4>
-                      <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3 bg-gray-50">
-                        {meme.comments && meme.comments.length > 0 ? (
-                          <ul className="space-y-2">
-                            {meme.comments.map((comment, index) => (
-                              <li key={index} className="border-b border-gray-200 pb-2">
-                                <span className="font-medium text-purple-600">{comment.user}</span>
-                                <p className="text-gray-700 text-sm mt-1">{comment.text}</p>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-gray-400 text-center py-2 text-sm">No comments yet. Be the first!</p>
-                        )}
-                      </div>
-                    </div>
+                                          <span className="text-2xl text-black dark:text-red-50 mt-1">
+                                          <TbLocationShare />
+                                          </span>
+                                        </div>
+
+
+                                        <div className="flex items-center justify-start w-full gap-2 mt-2 mb-2">
+                          <span className="font-medium">{meme.likes || 0}</span>
+                          <h1 className="">Likes</h1>
+                        </div>
+                    
+                        <div className="mb-8">
+                     
+                     <div className="max-h-10">
+                       {meme.comments && meme.comments.length > 0 ? (
+                         <ul className="space-y-2">
+                           {meme.comments.slice(-1).map((comment, index) => (
+                             <li key={index} className=" flex flex-col gap-1">
+                               <div className="flex gap-1 items-center justify-start max-h-10">
+                                 <span className="font-medium ">{comment.user} : </span>
+                                 <p className="  mt-1">{comment.text}</p>
+                               </div>
+
+
+                               <button onClick={() => openCommentsModal(meme)} className="text-left">View all  {meme.comments?.length || 0} comments</button>
+                               <CommentsModal 
+                                 isOpen={isModalOpen} 
+                                 onClose={() => setIsModalOpen(false)} 
+                                 meme={selectedMeme}
+                               />;
+
+
+
+                             </li>
+                           ))}
+                         </ul>
+                       ) : (
+                         <p className="text-gray-100 text-center py-2 text-sm">No comments yet. Be the first!</p>
+                       )}
+                     </div>
+                   </div>
                     
                     <div className="flex gap-2 items-center">
                       <input
