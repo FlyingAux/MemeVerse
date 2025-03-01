@@ -3,8 +3,12 @@ import React, { useState, useEffect } from "react";
 import { FaHeart, FaTrophy, FaMedal } from "react-icons/fa";
 import { getMemes } from "../utils/indexedDB";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 const Rankings = () => {
+
+   const router = useRouter();
+
   const [rankings, setRankings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -119,7 +123,9 @@ const Rankings = () => {
                     </div>
                     
                     <div className="bg-purple-600 hover:bg-purple-800 text-white px-3 py-2 rounded-full text-sm cursor-pointer">
-                      View Details
+                        <motion.button onClick={() => router.push(`/${entry.meme.id}`)}>
+                          View Meme
+                        </motion.button>
                     </div>
                   </motion.div>
                 </div>

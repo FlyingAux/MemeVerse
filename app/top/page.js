@@ -3,8 +3,13 @@ import React, { useState, useEffect } from "react";
 import { FaHeart, FaComment, FaUser, FaCrown } from "react-icons/fa";
 import { getMemes } from "../utils/indexedDB";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+
 
 const TopMemes = () => {
+
+  const router = useRouter();
+
   const [topMemes, setTopMemes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -128,6 +133,7 @@ const TopMemes = () => {
                       className="bg-purple-600 hover:bg-purple-800 text-white px-4 py-2 rounded-full text-sm font-medium"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      onClick={() => router.push(`/${meme.id}`)}
                     >
                       View Meme
                     </motion.button>
