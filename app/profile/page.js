@@ -57,17 +57,17 @@ const Profile = () => {
     <div className="py-24 px-6 md:px-12 max-w-6xl mx-auto  dark:bg-purple-300">
 <div className="flex flex-col md:flex-row gap-5 items-center justify-center w-full p-5 rounded-xl bg-purple-100 dark:bg-purple-400 shadow-lg md:h-80">
       
-      {/* Avatar Section */}
+  
       <div className="w-full md:w-[40%] flex items-center justify-center">
         <div className="h-32 w-32 md:h-40 md:w-40 border-2 border-black dark:border-white rounded-full bg-purple-300 flex items-center justify-center text-4xl md:text-5xl font-bold">
           {user.username.charAt(0).toUpperCase()}
         </div>
       </div>
 
-      {/* Info Section */}
+    
       <div className="flex flex-col w-full md:w-[60%] items-center md:items-start justify-center gap-4 text-center md:text-left">
         
-        {/* Name and Buttons */}
+  
         <div className="flex flex-col md:flex-row items-center justify-center md:justify-start w-full gap-4">
           <motion.h2
             className="text-2xl md:text-3xl font-extrabold capitalize"

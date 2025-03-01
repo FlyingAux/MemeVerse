@@ -45,6 +45,7 @@ const MemeFeed = () => {
     const storedUser = JSON.parse(localStorage.getItem("loggedInUser"));
     
     if (!storedUser) {
+      alert("You must be logged in to access Explore memes!");
       router.push("/");
       return;
     }

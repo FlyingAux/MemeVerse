@@ -52,8 +52,7 @@ const MemeDetail = () => {
         >
           ← Back
         </button>
-
-        {/* Strict Image Sizing with Fixed Height */}
+        
         <div className="w-full max-w-lg h-80 md:h-96 flex justify-center">
           <img 
             src={meme.imageUrl || meme.url} 
