@@ -9,11 +9,19 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import debounce from "lodash.debounce";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaRegComment } from "react-icons/fa";
-import { TbShare3 } from "react-icons/tb";
 import { TbLocationShare } from "react-icons/tb";
+import CommentsModal from './utils/commentModal';
 
-const MemeFeed = () => {
-  const router = useRouter();
+const Home = () => {
+  
+
+  const [selectedMeme, setSelectedMeme] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openCommentsModal = (meme) => {
+    setSelectedMeme(meme);
+    setIsModalOpen(true);
+  };
   
   const [allMemes, setAllMemes] = useState([]);
   const [displayedMemes, setDisplayedMemes] = useState([]);
@@ -33,7 +41,7 @@ const MemeFeed = () => {
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("loggedInUser"));
-    setUser(storedUser); // Allow home page to work even if no user is logged in
+    setUser(storedUser);
   
     if (storedUser) {
       const userLikes = JSON.parse(localStorage.getItem(`likedMemes_${storedUser.username}`)) || {};
@@ -47,7 +55,7 @@ const MemeFeed = () => {
         console.log("Memes fetched:", fetchedMemes);
   
         if (fetchedMemes.length === 0) {
-          setHasMore(false); // Prevent infinite scroll loop
+          setHasMore(false);
         }
   
         setAllMemes(fetchedMemes);
@@ -331,9 +339,9 @@ const handleComment = async (memeId) => {
                       </button>
                       
                       
-                      <span className="text-2xl text-black dark:text-red-50 ">
+                      <button onClick={() => openCommentsModal(meme)} className="text-2xl text-black dark:text-red-50 ">
                         <FaRegComment />
-                      </span>
+                      </button>
 
                       <span className="text-2xl text-black dark:text-red-50 mt-1">
                       <TbLocationShare />
@@ -362,7 +370,12 @@ const handleComment = async (memeId) => {
                                 </div>
 
 
-                                <p>View all  {meme.comments?.length || 0} comments</p>
+                                <button onClick={() => openCommentsModal(meme)} className="text-left">View all  {meme.comments?.length || 0} comments</button>
+                                <CommentsModal 
+                                  isOpen={isModalOpen} 
+                                  onClose={() => setIsModalOpen(false)} 
+                                  meme={selectedMeme}
+                                />;
 
 
 
@@ -412,4 +425,4 @@ const handleComment = async (memeId) => {
   );
 };
 
-export default MemeFeed;
+export default Home;
