@@ -125,100 +125,80 @@ const MemeFeed = () => {
     applyFiltersAndSort(allMemes, nextPage);
   };
 
-  const handleLikeToggle = async (meme) => {
-    if (!user) {
-      alert("You must be logged in to like memes!");
-      return;
+ const handleLikeToggle = async (meme) => {
+  if (!user) {
+    alert("You must be logged in to like memes!");
+    return;
+  }
+
+  const memeId = meme.id;
+  const isCurrentlyLiked = likedMemes[memeId];
+
+  const updatedMemes = allMemes.map((m) => {
+    if (m.id === memeId) {
+      const currentLikes = m.likes || 0;
+      return { 
+        ...m, 
+        likes: isCurrentlyLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1 
+      };
     }
-  
-    const memeId = meme.id;
-    const isCurrentlyLiked = likedMemes[memeId];
-  
-    const updatedMemes = allMemes.map((m) => {
-      if (m.id === memeId) {
-        const currentLikes = m.likes || 0;
-        return { 
-          ...m, 
-          likes: isCurrentlyLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1 
-        };
-      }
-      return m;
-    });
-  
-    setAllMemes(updatedMemes);
-  
-    const updatedLikes = { ...likedMemes };
-    if (isCurrentlyLiked) {
-      delete updatedLikes[memeId];
-    } else {
-      updatedLikes[memeId] = true;
-    }
-  
-    setLikedMemes(updatedLikes);
-    localStorage.setItem(`likedMemes_${user.username}`, JSON.stringify(updatedLikes));
-  
-    applyFiltersAndSort(updatedMemes, currentPage);
-  
-    try {
-      const updatedMeme = updatedMemes.find(m => m.id === memeId);
-      await updateMeme(updatedMeme);
-    } catch (error) {
-      console.error("Error updating meme:", error);
-    }
+    return m;
+  });
+
+  setAllMemes(updatedMemes);
+
+  const updatedLikes = { ...likedMemes };
+  if (isCurrentlyLiked) {
+    delete updatedLikes[memeId];
+  } else {
+    updatedLikes[memeId] = true;
+  }
+
+  setLikedMemes(updatedLikes);
+  localStorage.setItem(`likedMemes_${user.username}`, JSON.stringify(updatedLikes));
+
+  applyFiltersAndSort(updatedMemes, currentPage);
+
+  try {
+    const updatedMeme = updatedMemes.find(m => m.id === memeId);
+    await updateMeme(updatedMeme);
+  } catch (error) {
+    console.error("Error updating meme:", error);
+  }
+};
+
+const handleComment = async (memeId) => {
+  if (!user) {
+    alert("You must be logged in to comment.");
+    return;
+  }
+
+  const commentText = commentInputs[memeId]?.trim();
+  if (!commentText) return;
+
+  const newComment = { 
+    user: user.username, 
+    text: commentText,
+    timestamp: new Date().toISOString()
   };
 
-  const handleComment = async (memeId) => {
-    if (!user) {
-      alert("You need to log in to comment.");
-      return;
-    }
+  const updatedMemes = allMemes.map((m) =>
+    m.id === memeId ? { ...m, comments: [...(m.comments || []), newComment] } : m
+  );
+
+  setAllMemes(updatedMemes);
   
-    const commentText = commentInputs[memeId]?.trim();
-    if (!commentText) return;
+  setCommentInputs(prev => ({ ...prev, [memeId]: "" }));
   
-    const newComment = {
-      user: user.username,
-      text: commentText,
-      timestamp: new Date().toISOString(),
-    };
-  
-    let updatedMemes = allMemes.map((m) => {
-      if (m.id === memeId) {
-        const existingComments = m.comments || [];
-  
-        // Check if the user has already commented with the same text
-        const existingCommentIndex = existingComments.findIndex(
-          (c) => c.user === newComment.user && c.text === newComment.text
-        );
-  
-        let updatedComments;
-        if (existingCommentIndex !== -1) {
-          // Remove the existing comment
-          updatedComments = existingComments.filter(
-            (_, index) => index !== existingCommentIndex
-          );
-        } else {
-          // Add the new comment
-          updatedComments = [...existingComments, newComment];
-        }
-  
-        return { ...m, comments: updatedComments };
-      }
-      return m;
-    });
-  
-    setAllMemes(updatedMemes);
-    setCommentInputs((prev) => ({ ...prev, [memeId]: "" }));
-  
-    applyFiltersAndSort(updatedMemes, currentPage);
-  
-    try {
-      const updatedMeme = updatedMemes.find((m) => m.id === memeId);
-      await updateMeme(updatedMeme);
-    } catch (error) {
-      console.error("Error updating meme:", error);
-    }
-  };
+  applyFiltersAndSort(updatedMemes, currentPage);
+
+  try {
+    const updatedMeme = updatedMemes.find(m => m.id === memeId);
+    await updateMeme(updatedMeme);
+  } catch (error) {
+    console.error("Error adding comment:", error);
+  }
+};
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -245,6 +225,8 @@ const MemeFeed = () => {
 
 
   
+
+
   return (
     <div className="py-24 px-4 bg-slate-50 dark:bg-purple-300 min-h-screen">
       <div className="max-w-7xl mx-auto">
