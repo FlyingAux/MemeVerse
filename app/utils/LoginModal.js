@@ -56,6 +56,8 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
       setUsername("");
       setPassword("");
       setError("");
+
+      window.location.href = "/profile";
     }
   };
 

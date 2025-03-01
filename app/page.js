@@ -8,6 +8,9 @@ import { TbBrandFeedly } from "react-icons/tb";
 import InfiniteScroll from "react-infinite-scroll-component";
 import debounce from "lodash.debounce";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaRegComment } from "react-icons/fa";
+import { TbShare3 } from "react-icons/tb";
+import { TbLocationShare } from "react-icons/tb";
 
 const MemeFeed = () => {
   const router = useRouter();
@@ -30,30 +33,32 @@ const MemeFeed = () => {
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("loggedInUser"));
-    
-    if (!storedUser) {
-      router.push("/");
-      return;
+    setUser(storedUser); // Allow home page to work even if no user is logged in
+  
+    if (storedUser) {
+      const userLikes = JSON.parse(localStorage.getItem(`likedMemes_${storedUser.username}`)) || {};
+      setLikedMemes(userLikes);
     }
-    
-    setUser(storedUser);
-    
-    const userLikes = JSON.parse(localStorage.getItem(`likedMemes_${storedUser.username}`)) || {};
-    setLikedMemes(userLikes);
-    
+  
     const fetchMemes = async () => {
       try {
+        console.log("Fetching memes...");
         const fetchedMemes = await getMemes();
+        console.log("Memes fetched:", fetchedMemes);
+  
+        if (fetchedMemes.length === 0) {
+          setHasMore(false); // Prevent infinite scroll loop
+        }
+  
         setAllMemes(fetchedMemes);
-        
-        applyFiltersAndSort(fetchedMemes);
+        applyFiltersAndSort(fetchedMemes, 1);
       } catch (error) {
         console.error("Error fetching memes:", error);
       }
     };
-    
+  
     fetchMemes();
-  }, [router]);
+  }, []);
 
   const applyFiltersAndSort = useCallback((memeCollection, page = 1) => {
 
@@ -121,11 +126,14 @@ const MemeFeed = () => {
   };
 
   const handleLikeToggle = async (meme) => {
-    if (!user) return;
-    
+    if (!user) {
+      alert("You must be logged in to like memes!");
+      return;
+    }
+  
     const memeId = meme.id;
     const isCurrentlyLiked = likedMemes[memeId];
-    
+  
     const updatedMemes = allMemes.map((m) => {
       if (m.id === memeId) {
         const currentLikes = m.likes || 0;
@@ -136,21 +144,21 @@ const MemeFeed = () => {
       }
       return m;
     });
-    
+  
     setAllMemes(updatedMemes);
-    
+  
     const updatedLikes = { ...likedMemes };
     if (isCurrentlyLiked) {
       delete updatedLikes[memeId];
     } else {
       updatedLikes[memeId] = true;
     }
-    
+  
     setLikedMemes(updatedLikes);
     localStorage.setItem(`likedMemes_${user.username}`, JSON.stringify(updatedLikes));
-    
+  
     applyFiltersAndSort(updatedMemes, currentPage);
-    
+  
     try {
       const updatedMeme = updatedMemes.find(m => m.id === memeId);
       await updateMeme(updatedMeme);
@@ -160,30 +168,55 @@ const MemeFeed = () => {
   };
 
   const handleComment = async (memeId) => {
+    if (!user) {
+      alert("You need to log in to comment.");
+      return;
+    }
+  
     const commentText = commentInputs[memeId]?.trim();
-    if (!user || !commentText) return;
-
-    const newComment = { 
-      user: user.username, 
+    if (!commentText) return;
+  
+    const newComment = {
+      user: user.username,
       text: commentText,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-
-    const updatedMemes = allMemes.map((m) =>
-      m.id === memeId ? { ...m, comments: [...(m.comments || []), newComment] } : m
-    );
-    
+  
+    let updatedMemes = allMemes.map((m) => {
+      if (m.id === memeId) {
+        const existingComments = m.comments || [];
+  
+        // Check if the user has already commented with the same text
+        const existingCommentIndex = existingComments.findIndex(
+          (c) => c.user === newComment.user && c.text === newComment.text
+        );
+  
+        let updatedComments;
+        if (existingCommentIndex !== -1) {
+          // Remove the existing comment
+          updatedComments = existingComments.filter(
+            (_, index) => index !== existingCommentIndex
+          );
+        } else {
+          // Add the new comment
+          updatedComments = [...existingComments, newComment];
+        }
+  
+        return { ...m, comments: updatedComments };
+      }
+      return m;
+    });
+  
     setAllMemes(updatedMemes);
-    
-    setCommentInputs(prev => ({ ...prev, [memeId]: "" }));
-    
+    setCommentInputs((prev) => ({ ...prev, [memeId]: "" }));
+  
     applyFiltersAndSort(updatedMemes, currentPage);
-    
+  
     try {
-      const updatedMeme = updatedMemes.find(m => m.id === memeId);
+      const updatedMeme = updatedMemes.find((m) => m.id === memeId);
       await updateMeme(updatedMeme);
     } catch (error) {
-      console.error("Error adding comment:", error);
+      console.error("Error updating meme:", error);
     }
   };
 
@@ -210,8 +243,10 @@ const MemeFeed = () => {
     }
   };
 
+
+  
   return (
-    <div className="py-24 px-4 bg-gray-50 dark:bg-purple-300 min-h-screen">
+    <div className="py-24 px-4 bg-slate-50 dark:bg-purple-300 min-h-screen">
       <div className="max-w-7xl mx-auto">
 
       <div className="flex items-center justify-center h-96 rounded-xl bg-purple-100 dark:bg-purple-400 text-gray-900 px-6 mb-3 text-center">
@@ -264,24 +299,28 @@ const MemeFeed = () => {
           }
         >
           <motion.div 
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
           >
             <AnimatePresence>
               {displayedMemes.map((meme) => (
+
+                // Individual memes 
                 <motion.div
                   key={meme.id}
                   variants={itemVariants}
                   layout
-                  className="bg-white  rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+                  className="bg-purple-100 dark:bg-purple-400 w-full rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
                 >
+
+                  {/* IMAGE part  */}
                   <div className="relative overflow-hidden">
                     <img 
                       src={meme.imageUrl} 
                       alt={meme.title} 
-                      className="w-full h-64 object-cover transition-transform duration-500 hover:scale-105"
+                      className="w-full h-96 object-cover transition-transform duration-500 hover:scale-105"
                     />
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                       <h3 className="text-xl font-bold text-white">{meme.title}</h3>
@@ -289,47 +328,73 @@ const MemeFeed = () => {
                     </div>
                   </div>
                   
+                  {/* Part below Image  */}
                   <div className="p-4">
-                    <div className="flex items-center gap-3 mb-4">
+
+                  {/* HEART AND COMMENT ICONS */}
+                    <div className="flex items-center justify-start gap-3">
                       <button
                         onClick={() => handleLikeToggle(meme)}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors ${
+                        className={`flex items-center gap-2 rounded-full transition-colors ${
                           likedMemes[meme.id] 
-                            ? "text-red-500 bg-red-50 hover:bg-red-100" 
-                            : "text-gray-500 hover:bg-gray-100"
+                            ? "text-red-500 " 
+                            : "text-gray-500 "
                         }`}
                       >
                         {likedMemes[meme.id] ? (
-                          <FaHeart className="text-xl" />
+                          <FaHeart className="text-2xl" />
                         ) : (
-                          <FaRegHeart className="text-xl" />
+                          <FaRegHeart className="text-2xl text-black dark:text-red-50" />
                         )}
-                        <span className="font-medium">{meme.likes || 0}</span>
                       </button>
                       
-                      <span className="text-sm text-gray-500 ">
-                        {meme.comments?.length || 0} comments
+                      
+                      <span className="text-2xl text-black dark:text-red-50 ">
+                        <FaRegComment />
+                      </span>
+
+                      <span className="text-2xl text-black dark:text-red-50 mt-1">
+                      <TbLocationShare />
                       </span>
                     </div>
+
+                  {/* LIKES  */}
+                        <div className="flex items-center justify-start w-full gap-2 mt-2 mb-2">
+                          <span className="font-medium">{meme.likes || 0}</span>
+                          <h1 className="">Likes</h1>
+                        </div>
+
+
                     
-                    <div className="mb-4">
-                      <h4 className="font-bold text-gray-700 mb-2">Comments</h4>
-                      <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3 bg-gray-50">
+                  {/* Comments Displayed here */}
+                    <div className="mb-8">
+                     
+                      <div className="max-h-10">
                         {meme.comments && meme.comments.length > 0 ? (
                           <ul className="space-y-2">
-                            {meme.comments.map((comment, index) => (
-                              <li key={index} className="border-b border-gray-200 pb-2">
-                                <span className="font-medium text-purple-600">{comment.user}</span>
-                                <p className="text-gray-700 text-sm mt-1">{comment.text}</p>
+                            {meme.comments.slice(-1).map((comment, index) => (
+                              <li key={index} className=" flex flex-col gap-1">
+                                <div className="flex gap-1 items-center justify-start max-h-10">
+                                  <span className="font-medium ">{comment.user} : </span>
+                                  <p className="  mt-1">{comment.text}</p>
+                                </div>
+
+
+                                <p>View all  {meme.comments?.length || 0} comments</p>
+
+
+
                               </li>
                             ))}
                           </ul>
                         ) : (
-                          <p className="text-gray-400 text-center py-2 text-sm">No comments yet. Be the first!</p>
+                          <p className="text-gray-100 text-center py-2 text-sm">No comments yet. Be the first!</p>
                         )}
                       </div>
                     </div>
                     
+
+                    {/* COMMENT KRNE KA INPUT  */}
                     <div className="flex gap-2 items-center">
                       <input
                         type="text"
@@ -353,6 +418,8 @@ const MemeFeed = () => {
                       </button>
                     </div>
                   </div>
+
+                  
                 </motion.div>
               ))}
             </AnimatePresence>
