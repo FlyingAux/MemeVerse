@@ -15,230 +15,251 @@ import { toast, ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; 
 
 const MemeFeed = () => {
-  const router = useRouter();
-  
-    const [selectedMeme, setSelectedMeme] = useState(null);
+  const [selectedMeme, setSelectedMeme] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+  
     const openCommentsModal = (meme) => {
       setSelectedMeme(meme);
       setIsModalOpen(true);
     };
-
-
-
-  const [allMemes, setAllMemes] = useState([]);
-  const [displayedMemes, setDisplayedMemes] = useState([]);
-  const [user, setUser] = useState(null);
-  const [likedMemes, setLikedMemes] = useState({});
-  const [commentInputs, setCommentInputs] = useState({});
-  
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const MEMES_PER_PAGE = 6;
-  
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("date");
-  const [category, setCategory] = useState("All");
-  
-  const categories = ["All", "Trending", "New", "Classic", "Random"];
-
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("loggedInUser"));
     
-    if (!storedUser) {
-      toast.info("🚀 Please log in to Explore memes!", {
-        position: "top-right",
-        autoClose: 2000, 
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "light",
-        transition: Bounce,
-      });
-
+    const [allMemes, setAllMemes] = useState([]);
+    const [displayedMemes, setDisplayedMemes] = useState([]);
+    const [user, setUser] = useState(null);
+    const [likedMemes, setLikedMemes] = useState({});
+    const [commentInputs, setCommentInputs] = useState({});
+    
+    const [currentPage, setCurrentPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const MEMES_PER_PAGE = 6;
+    
+    const [searchQuery, setSearchQuery] = useState("");
+    const [sortBy, setSortBy] = useState("date");
+    const [category, setCategory] = useState("All");
+    
+    const categories = ["All", "Trending", "New", "Classic", "Random"];
+  
+    const applyFiltersAndSort = useCallback((memeCollection, page = 1) => {
+      let filteredResults = [...memeCollection];
       
-      setTimeout(() => {
-        router.push("/");
-      }, 2000);
-
-      return;
-    }
+      if (category !== "All") {
+        filteredResults = filteredResults.filter(meme => 
+          meme.category === category
+        );
+      }
+      
+      if (searchQuery.trim() !== "") {
+        filteredResults = filteredResults.filter(meme =>
+          meme.title.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+      
+      filteredResults.sort((a, b) => {
+        switch (sortBy) {
+          case "likes":
+            return (b.likes || 0) - (a.likes || 0);
+          case "comments":
+            return ((b.comments?.length || 0) - (a.comments?.length || 0));
+          case "date":
+          default:
+            return new Date(b.date || 0) - new Date(a.date || 0);
+        }
+      });
+      
+      const startIndex = 0;
+      const endIndex = page * MEMES_PER_PAGE;
+      const paginatedResults = filteredResults.slice(startIndex, endIndex);
+      
+      setDisplayedMemes(paginatedResults);
+      setHasMore(filteredResults.length > endIndex);
+      
+      return { filteredCount: filteredResults.length, displayedCount: paginatedResults.length };
+    }, [category, searchQuery, sortBy]);
+  
+  
     
-    setUser(storedUser);
+    useEffect(() => {
+      const storedUser = JSON.parse(localStorage.getItem("loggedInUser"));
+      setUser(storedUser);
     
-    const userLikes = JSON.parse(localStorage.getItem(`likedMemes_${storedUser.username}`)) || {};
-    setLikedMemes(userLikes);
+      if (storedUser) {
+        const userLikes = JSON.parse(localStorage.getItem(`likedMemes_${storedUser.username}`)) || {};
+        setLikedMemes(userLikes);
+      }
     
-    const fetchMemes = async () => {
+      const fetchMemes = async () => {
+        try {
+          console.log("Fetching memes...");
+          let storedMemes = await getMemes(); // Fetch from IndexedDB
+    
+          console.log("Stored Memes fetched:", storedMemes);
+    
+          if (!storedMemes || storedMemes.length === 0) {
+            const response = await fetch("https://api.imgflip.com/get_memes");
+            const data = await response.json();
+    
+            if (!data.success) throw new Error("Failed to fetch Imgflip memes");
+    
+            const imgflipMemes = data.data.memes.map((meme) => ({
+              id: meme.id,
+              title: meme.name,
+              imageUrl: meme.url,
+              likes: 0,
+              comments: [],
+              category: "Random",
+              user: "Imgflip",
+              date: new Date().toISOString(),
+            }));
+    
+            // Save to IndexedDB for future reloads
+            storedMemes = imgflipMemes;
+            storedMemes.forEach(async (meme) => await updateMeme(meme));  
+          }
+    
+          const storedLikes = storedUser 
+            ? JSON.parse(localStorage.getItem(`likedMemes_${storedUser.username}`)) || {}
+            : {};
+    
+          // Just ensure likes is not undefined, don't modify the count
+          const combinedMemes = storedMemes.map(meme => ({
+            ...meme,
+            likes: meme.likes || 0
+          }));
+    
+          console.log("Final Memes:", combinedMemes);
+    
+          setAllMemes(combinedMemes);
+          applyFiltersAndSort(combinedMemes, 1);
+        } catch (error) {
+          console.error("Error fetching memes:", error);
+        }
+      };
+    
+      if (allMemes.length === 0) {
+        fetchMemes();
+      }
+    }, []);
+  
+  
+    useEffect(() => {
+      if (allMemes.length > 0) {
+        applyFiltersAndSort(allMemes, currentPage);
+      }
+    }, [allMemes, applyFiltersAndSort, currentPage]);
+  
+    const handleLikeToggle = async (meme) => {
+      if (!user) {
+        toast.info('🚀 Login first to like memes!', { position: "top-right", autoClose: 5000 });
+        return;
+      }
+    
+      const memeId = meme.id;
+      const isCurrentlyLiked = likedMemes[memeId];
+    
+      const updatedMemes = allMemes.map((m) => {
+        if (m.id === memeId) {
+          return { 
+            ...m, 
+            likes: isCurrentlyLiked ? Math.max(0, (m.likes || 0) - 1) : (m.likes || 0) + 1 
+          };
+        }
+        return m;
+      });
+    
+      setAllMemes(updatedMemes);
+    
+      const updatedLikes = { ...likedMemes };
+      isCurrentlyLiked ? delete updatedLikes[memeId] : updatedLikes[memeId] = true;
+    
+      setLikedMemes(updatedLikes);
+      localStorage.setItem(`likedMemes_${user.username}`, JSON.stringify(updatedLikes));
+    
       try {
-        const fetchedMemes = await getMemes();
-        setAllMemes(fetchedMemes);
-        
-        applyFiltersAndSort(fetchedMemes);
+        const updatedMeme = updatedMemes.find(m => m.id === memeId);
+        await updateMeme(updatedMeme);
       } catch (error) {
-        console.error("Error fetching memes:", error);
+        console.error("Error updating meme:", error);
       }
     };
     
-    fetchMemes();
-  }, [router]);
-
-  const applyFiltersAndSort = useCallback((memeCollection, page = 1) => {
-
-    let filteredResults = [...memeCollection];
-    
-    if (category !== "All") {
-      filteredResults = filteredResults.filter(meme => 
-        meme.category === category
-      );
-    }
-    
-    if (searchQuery.trim() !== "") {
-      filteredResults = filteredResults.filter(meme =>
-        meme.title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    
-    filteredResults.sort((a, b) => {
-      switch (sortBy) {
-        case "likes":
-          return (b.likes || 0) - (a.likes || 0);
-        case "comments":
-          return ((b.comments?.length || 0) - (a.comments?.length || 0));
-        case "date":
-        default:
-          return new Date(b.date) - new Date(a.date);
+    const handleComment = async (memeId) => {
+      if (!user) {
+        toast.info('💬 Login to share your thoughts!', { position: "top-right", autoClose: 5000 });
+        return;
       }
-    });
     
-    const startIndex = 0;
-    const endIndex = page * MEMES_PER_PAGE;
-    const paginatedResults = filteredResults.slice(startIndex, endIndex);
+      const commentText = commentInputs[memeId]?.trim();
+      if (!commentText) return;
     
-    setDisplayedMemes(paginatedResults);
-    setHasMore(filteredResults.length > endIndex);
+      const newComment = { 
+        user: user.username, 
+        text: commentText,
+        timestamp: new Date().toISOString()
+      };
     
-    return { filteredCount: filteredResults.length, displayedCount: paginatedResults.length };
-  }, [category, searchQuery, sortBy]);
-
-  const handleSearch = useCallback(
-    debounce((query) => {
-      setSearchQuery(query);
+      const updatedMemes = allMemes.map((m) =>
+        m.id === memeId ? { ...m, comments: [...(m.comments || []), newComment] } : m
+      );
+    
+      setAllMemes(updatedMemes);
+      setCommentInputs(prev => ({ ...prev, [memeId]: "" }));
+    
+      try {
+        const updatedMeme = updatedMemes.find(m => m.id === memeId);
+        await updateMeme(updatedMeme);
+      } catch (error) {
+        console.error("Error adding comment:", error);
+      }
+    };
+  
+    const handleSearch = useCallback(
+      debounce((query) => {
+        setSearchQuery(query);
+        setCurrentPage(1);
+        applyFiltersAndSort(allMemes, 1);
+      }, 400),
+      [applyFiltersAndSort, allMemes]
+    );
+  
+    const handleSortChange = (newSortMethod) => {
+      setSortBy(newSortMethod);
       setCurrentPage(1);
       applyFiltersAndSort(allMemes, 1);
-    }, 400),
-    [applyFiltersAndSort, allMemes]
-  );
-
-  const handleSortChange = (newSortMethod) => {
-    setSortBy(newSortMethod);
-    setCurrentPage(1);
-    applyFiltersAndSort(allMemes, 1);
-  };
-
-  const handleCategoryChange = (newCategory) => {
-    setCategory(newCategory);
-    setCurrentPage(1);
-    applyFiltersAndSort(allMemes, 1);
-  };
-
-  const fetchMoreMemes = () => {
-    const nextPage = currentPage + 1;
-    setCurrentPage(nextPage);
-    applyFiltersAndSort(allMemes, nextPage);
-  };
-
-  const handleLikeToggle = async (meme) => {
-    if (!user) return;
-    
-    const memeId = meme.id;
-    const isCurrentlyLiked = likedMemes[memeId];
-    
-    const updatedMemes = allMemes.map((m) => {
-      if (m.id === memeId) {
-        const currentLikes = m.likes || 0;
-        return { 
-          ...m, 
-          likes: isCurrentlyLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1 
-        };
-      }
-      return m;
-    });
-    
-    setAllMemes(updatedMemes);
-    
-    const updatedLikes = { ...likedMemes };
-    if (isCurrentlyLiked) {
-      delete updatedLikes[memeId];
-    } else {
-      updatedLikes[memeId] = true;
-    }
-    
-    setLikedMemes(updatedLikes);
-    localStorage.setItem(`likedMemes_${user.username}`, JSON.stringify(updatedLikes));
-    
-    applyFiltersAndSort(updatedMemes, currentPage);
-    
-    try {
-      const updatedMeme = updatedMemes.find(m => m.id === memeId);
-      await updateMeme(updatedMeme);
-    } catch (error) {
-      console.error("Error updating meme:", error);
-    }
-  };
-
-  const handleComment = async (memeId) => {
-    const commentText = commentInputs[memeId]?.trim();
-    if (!user || !commentText) return;
-
-    const newComment = { 
-      user: user.username, 
-      text: commentText,
-      timestamp: new Date().toISOString()
     };
-
-    const updatedMemes = allMemes.map((m) =>
-      m.id === memeId ? { ...m, comments: [...(m.comments || []), newComment] } : m
-    );
-    
-    setAllMemes(updatedMemes);
-    
-    setCommentInputs(prev => ({ ...prev, [memeId]: "" }));
-    
-    applyFiltersAndSort(updatedMemes, currentPage);
-    
-    try {
-      const updatedMeme = updatedMemes.find(m => m.id === memeId);
-      await updateMeme(updatedMeme);
-    } catch (error) {
-      console.error("Error adding comment:", error);
-    }
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        staggerChildren: 0.1 
-      }
-    }
-  };
   
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1,
-      transition: { 
-        type: "spring", 
-        stiffness: 300,
-        damping: 24
+    const handleCategoryChange = (newCategory) => {
+      setCategory(newCategory);
+      setCurrentPage(1);
+      applyFiltersAndSort(allMemes, 1);
+    };
+  
+    const fetchMoreMemes = () => {
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
+    };
+  
+    const containerVariants = {
+      hidden: { opacity: 0 },
+      visible: { 
+        opacity: 1,
+        transition: { 
+          staggerChildren: 0.1 
+        }
       }
-    }
-  };
+    };
+    
+    const itemVariants = {
+      hidden: { y: 20, opacity: 0 },
+      visible: { 
+        y: 0, 
+        opacity: 1,
+        transition: { 
+          type: "spring", 
+          stiffness: 300,
+          damping: 24
+        }
+      }
+    };
 
   return (
     <div className="py-24 px-4 bg-gray-50 dark:bg-purple-300 min-h-screen">
@@ -261,7 +282,6 @@ const MemeFeed = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
-
           <select 
             onChange={(e) => handleSortChange(e.target.value)} 
             value={sortBy}
@@ -271,7 +291,6 @@ const MemeFeed = () => {
             <option value="likes">Most Liked</option>
             <option value="comments">Most Comments</option>
           </select>
-
           <select 
             onChange={(e) => handleCategoryChange(e.target.value)} 
             value={category}
@@ -282,7 +301,6 @@ const MemeFeed = () => {
             ))}
           </select>
         </div>
-
         <InfiniteScroll
           dataLength={displayedMemes.length}
           next={fetchMoreMemes}
@@ -330,15 +348,9 @@ const MemeFeed = () => {
                       <p className="text-gray-200 text-sm">by {meme.user}</p>
                     </div>
                   </div>
-                  
                   <div className="p-4">
                      <div className="flex items-center justify-start gap-3">
-                                          <button
-                                            onClick={() => handleLikeToggle(meme)}
-                                            className={`flex items-center gap-2 rounded-full transition-colors ${
-                                              likedMemes[meme.id] 
-                                                ? "text-red-500 " 
-                                                : "text-gray-500 "
+                                          <button onClick={() => handleLikeToggle(meme)} className={`flex items-center gap-2 rounded-full transition-colors ${ likedMemes[meme.id] ? "text-red-500 "  : "text-gray-500 "
                                             }`}
                                           >
                                             {likedMemes[meme.id] ? (
@@ -346,26 +358,19 @@ const MemeFeed = () => {
                                             ) : (
                                               <FaRegHeart className="text-2xl text-black dark:text-red-50" />
                                             )}
-                                          </button>
-                                          
-                                          
+                                          </button>  
                                           <button onClick={() => openCommentsModal(meme)} className="text-2xl text-black dark:text-red-50 ">
                                             <FaRegComment />
                                           </button>
-                    
                                           <span className="text-2xl text-black dark:text-red-50 mt-1">
                                           <TbLocationShare />
                                           </span>
                                         </div>
-
-
                                         <div className="flex items-center justify-start w-full gap-2 mt-2 mb-2">
                           <span className="font-medium">{meme.likes || 0}</span>
                           <h1 className="">Likes</h1>
-                        </div>
-                    
-                        <div className="mb-8">
-                     
+                        </div>            
+                        <div className="mb-8">                   
                      <div className="max-h-10">
                        {meme.comments && meme.comments.length > 0 ? (
                          <ul className="space-y-2">
@@ -383,9 +388,6 @@ const MemeFeed = () => {
                                  onClose={() => setIsModalOpen(false)} 
                                  meme={selectedMeme}
                                />;
-
-
-
                              </li>
                            ))}
                          </ul>
