@@ -1,30 +1,19 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
 import { getMemes, updateMeme } from "./utils/indexedDB";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { IoMdSend } from "react-icons/io";
-import { TbBrandFeedly } from "react-icons/tb";
+import { TbLocationShare } from "react-icons/tb";
 import InfiniteScroll from "react-infinite-scroll-component";
-import debounce from "lodash.debounce";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaRegComment } from "react-icons/fa";
-import { TbLocationShare } from "react-icons/tb";
 import CommentsModal from './utils/commentModal';
 import { toast, ToastContainer, Bounce } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Import styles
+import "react-toastify/dist/ReactToastify.css";
 
 const Home = () => {
-  
-
   const [selectedMeme, setSelectedMeme] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openCommentsModal = (meme) => {
-    setSelectedMeme(meme);
-    setIsModalOpen(true);
-  };
-  
   const [allMemes, setAllMemes] = useState([]);
   const [displayedMemes, setDisplayedMemes] = useState([]);
   const [user, setUser] = useState(null);
@@ -34,12 +23,11 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const MEMES_PER_PAGE = 6;
-  
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("date");
-  const [category, setCategory] = useState("All");
-  
-  const categories = ["All", "Trending", "New", "Classic", "Random"];
+
+  const openCommentsModal = (meme) => {
+    setSelectedMeme(meme);
+    setIsModalOpen(true);
+  };
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("loggedInUser"));
@@ -61,7 +49,7 @@ const Home = () => {
         }
   
         setAllMemes(fetchedMemes);
-        applyFiltersAndSort(fetchedMemes, 1);
+        loadInitialMemes(fetchedMemes);
       } catch (error) {
         console.error("Error fetching memes:", error);
       }
@@ -70,165 +58,127 @@ const Home = () => {
     fetchMemes();
   }, []);
 
-  const applyFiltersAndSort = useCallback((memeCollection, page = 1) => {
-
-    let filteredResults = [...memeCollection];
-    
-    if (category !== "All") {
-      filteredResults = filteredResults.filter(meme => 
-        meme.category === category
-      );
-    }
-    
-    if (searchQuery.trim() !== "") {
-      filteredResults = filteredResults.filter(meme =>
-        meme.title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    
-    filteredResults.sort((a, b) => {
-      switch (sortBy) {
-        case "likes":
-          return (b.likes || 0) - (a.likes || 0);
-        case "comments":
-          return ((b.comments?.length || 0) - (a.comments?.length || 0));
-        case "date":
-        default:
-          return new Date(b.date) - new Date(a.date);
-      }
-    });
-    
-    const startIndex = 0;
-    const endIndex = page * MEMES_PER_PAGE;
-    const paginatedResults = filteredResults.slice(startIndex, endIndex);
-    
-    setDisplayedMemes(paginatedResults);
-    setHasMore(filteredResults.length > endIndex);
-    
-    return { filteredCount: filteredResults.length, displayedCount: paginatedResults.length };
-  }, [category, searchQuery, sortBy]);
-
-  const handleSearch = useCallback(
-    debounce((query) => {
-      setSearchQuery(query);
-      setCurrentPage(1);
-      applyFiltersAndSort(allMemes, 1);
-    }, 400),
-    [applyFiltersAndSort, allMemes]
-  );
-
-  const handleSortChange = (newSortMethod) => {
-    setSortBy(newSortMethod);
-    setCurrentPage(1);
-    applyFiltersAndSort(allMemes, 1);
-  };
-
-  const handleCategoryChange = (newCategory) => {
-    setCategory(newCategory);
-    setCurrentPage(1);
-    applyFiltersAndSort(allMemes, 1);
+  const loadInitialMemes = (memes) => {
+    // Sort memes by date (newest first)
+    const sortedMemes = [...memes].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const initialMemes = sortedMemes.slice(0, MEMES_PER_PAGE);
+    setDisplayedMemes(initialMemes);
+    setHasMore(sortedMemes.length > MEMES_PER_PAGE);
   };
 
   const fetchMoreMemes = () => {
     const nextPage = currentPage + 1;
     setCurrentPage(nextPage);
-    applyFiltersAndSort(allMemes, nextPage);
+    
+    // Sort memes by date (newest first)
+    const sortedMemes = [...allMemes].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const endIndex = nextPage * MEMES_PER_PAGE;
+    const paginatedResults = sortedMemes.slice(0, endIndex);
+    
+    setDisplayedMemes(paginatedResults);
+    setHasMore(sortedMemes.length > endIndex);
   };
 
- const handleLikeToggle = async (meme) => {
-  if (!user) {
-    toast.info('🚀 Login first to like memes!', {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: false,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-      transition: Bounce,
+  const handleLikeToggle = async (meme) => {
+    if (!user) {
+      toast.info('🚀 Login first to like memes!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
       });
-    return;
-  }
-
-  const memeId = meme.id;
-  const isCurrentlyLiked = likedMemes[memeId];
-
-  const updatedMemes = allMemes.map((m) => {
-    if (m.id === memeId) {
-      const currentLikes = m.likes || 0;
-      return { 
-        ...m, 
-        likes: isCurrentlyLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1 
-      };
+      return;
     }
-    return m;
-  });
 
-  setAllMemes(updatedMemes);
+    const memeId = meme.id;
+    const isCurrentlyLiked = likedMemes[memeId];
 
-  const updatedLikes = { ...likedMemes };
-  if (isCurrentlyLiked) {
-    delete updatedLikes[memeId];
-  } else {
-    updatedLikes[memeId] = true;
-  }
+    const updatedMemes = allMemes.map((m) => {
+      if (m.id === memeId) {
+        const currentLikes = m.likes || 0;
+        return { 
+          ...m, 
+          likes: isCurrentlyLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1 
+        };
+      }
+      return m;
+    });
 
-  setLikedMemes(updatedLikes);
-  localStorage.setItem(`likedMemes_${user.username}`, JSON.stringify(updatedLikes));
+    setAllMemes(updatedMemes);
 
-  applyFiltersAndSort(updatedMemes, currentPage);
+    const updatedLikes = { ...likedMemes };
+    if (isCurrentlyLiked) {
+      delete updatedLikes[memeId];
+    } else {
+      updatedLikes[memeId] = true;
+    }
 
-  try {
-    const updatedMeme = updatedMemes.find(m => m.id === memeId);
-    await updateMeme(updatedMeme);
-  } catch (error) {
-    console.error("Error updating meme:", error);
-  }
-};
+    setLikedMemes(updatedLikes);
+    localStorage.setItem(`likedMemes_${user.username}`, JSON.stringify(updatedLikes));
 
-const handleComment = async (memeId) => {
-  if (!user) {
-    toast.info('💬 Login to share your thoughts!', {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: false,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-      transition: Bounce,
-      });
-    return;
-  }
+    // Update displayed memes
+    const sortedMemes = [...updatedMemes].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const paginatedResults = sortedMemes.slice(0, currentPage * MEMES_PER_PAGE);
+    setDisplayedMemes(paginatedResults);
 
-  const commentText = commentInputs[memeId]?.trim();
-  if (!commentText) return;
-
-  const newComment = { 
-    user: user.username, 
-    text: commentText,
-    timestamp: new Date().toISOString()
+    try {
+      const updatedMeme = updatedMemes.find(m => m.id === memeId);
+      await updateMeme(updatedMeme);
+    } catch (error) {
+      console.error("Error updating meme:", error);
+    }
   };
 
-  const updatedMemes = allMemes.map((m) =>
-    m.id === memeId ? { ...m, comments: [...(m.comments || []), newComment] } : m
-  );
+  const handleComment = async (memeId) => {
+    if (!user) {
+      toast.info('💬 Login to share your thoughts!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      return;
+    }
 
-  setAllMemes(updatedMemes);
-  
-  setCommentInputs(prev => ({ ...prev, [memeId]: "" }));
-  
-  applyFiltersAndSort(updatedMemes, currentPage);
+    const commentText = commentInputs[memeId]?.trim();
+    if (!commentText) return;
 
-  try {
-    const updatedMeme = updatedMemes.find(m => m.id === memeId);
-    await updateMeme(updatedMeme);
-  } catch (error) {
-    console.error("Error adding comment:", error);
-  }
-};
+    const newComment = { 
+      user: user.username, 
+      text: commentText,
+      timestamp: new Date().toISOString()
+    };
+
+    const updatedMemes = allMemes.map((m) =>
+      m.id === memeId ? { ...m, comments: [...(m.comments || []), newComment] } : m
+    );
+
+    setAllMemes(updatedMemes);
+    
+    setCommentInputs(prev => ({ ...prev, [memeId]: "" }));
+    
+    // Update displayed memes
+    const sortedMemes = [...updatedMemes].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const paginatedResults = sortedMemes.slice(0, currentPage * MEMES_PER_PAGE);
+    setDisplayedMemes(paginatedResults);
+
+    try {
+      const updatedMeme = updatedMemes.find(m => m.id === memeId);
+      await updateMeme(updatedMeme);
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -253,42 +203,36 @@ const handleComment = async (memeId) => {
     }
   };
 
-
-  
-
-
   return (
-    
     <div className="py-24 px-4 bg-slate-50 dark:bg-purple-300 min-h-screen">
       <ToastContainer />
       <div className="max-w-7xl mx-auto">
 
-      <div className="flex items-center justify-center h-96 rounded-xl bg-purple-100 dark:bg-purple-400 text-gray-900 px-6 mb-3 text-center">
-      <motion.div
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="max-w-3xl"
-      >
-       <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 1 }}
-          className="mt-6 text-4xl font-semibold text-purple-500 dark:text-white"
-        >
-          Welcome to MemeVerse! The ultimate destination for meme lovers 🎉
-        </motion.p>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
-          className="mt-4 text-lg text-gray-700"
-        >
-          Explore, upload, and interact with trending memes in a fun and engaging way. Like, comment, and rank the best memes!
-        </motion.p>
-      </motion.div>
-    </div>
-
+        <div className="flex items-center justify-center h-96 rounded-xl bg-purple-100 dark:bg-purple-400 text-gray-900 px-6 mb-3 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="max-w-3xl"
+          >
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 1 }}
+              className="mt-6 text-4xl font-semibold text-purple-500 dark:text-white"
+            >
+              Welcome to MemeVerse! The ultimate destination for meme lovers 🎉
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+              className="mt-4 text-lg text-gray-700"
+            >
+              Explore, upload, and interact with trending memes in a fun and engaging way. Like, comment, and rank the best memes!
+            </motion.p>
+          </motion.div>
+        </div>
 
         <InfiniteScroll
           dataLength={displayedMemes.length}
@@ -307,7 +251,7 @@ const handleComment = async (memeId) => {
           endMessage={
             <p className="text-center text-gray-500 my-8">
               {displayedMemes.length === 0 
-                ? "No memes match your filters. Try adjusting your search."
+                ? "No memes found. Try again later."
                 : "You've seen all the memes 😎"}
             </p>
           }
@@ -320,16 +264,13 @@ const handleComment = async (memeId) => {
           >
             <AnimatePresence>
               {displayedMemes.map((meme) => (
-
-                // Individual memes 
                 <motion.div
                   key={meme.id}
                   variants={itemVariants}
                   layout
                   className="bg-purple-100 dark:bg-purple-400 w-full rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
                 >
-
-                  {/* IMAGE part  */}
+                  {/* IMAGE part */}
                   <div className="relative overflow-hidden">
                     <img 
                       src={meme.imageUrl} 
@@ -342,10 +283,9 @@ const handleComment = async (memeId) => {
                     </div>
                   </div>
                   
-                  {/* Part below Image  */}
+                  {/* Part below Image */}
                   <div className="p-4">
-
-                  {/* HEART AND COMMENT ICONS */}
+                    {/* HEART AND COMMENT ICONS */}
                     <div className="flex items-center justify-start gap-3">
                       <button
                         onClick={() => handleLikeToggle(meme)}
@@ -362,47 +302,37 @@ const handleComment = async (memeId) => {
                         )}
                       </button>
                       
-                      
                       <button onClick={() => openCommentsModal(meme)} className="text-2xl text-black dark:text-red-50 ">
                         <FaRegComment />
                       </button>
 
                       <span className="text-2xl text-black dark:text-red-50 mt-1">
-                      <TbLocationShare />
+                        <TbLocationShare />
                       </span>
                     </div>
 
-                  {/* LIKES  */}
-                        <div className="flex items-center justify-start w-full gap-2 mt-2 mb-2">
-                          <span className="font-medium">{meme.likes || 0}</span>
-                          <h1 className="">Likes</h1>
-                        </div>
+                    {/* LIKES */}
+                    <div className="flex items-center justify-start w-full gap-2 mt-2 mb-2">
+                      <span className="font-medium">{meme.likes || 0}</span>
+                      <h1 className="">Likes</h1>
+                    </div>
 
-
-                    
-                  {/* Comments Displayed here */}
+                    {/* Comments Displayed here */}
                     <div className="mb-8">
-                     
                       <div className="max-h-10">
                         {meme.comments && meme.comments.length > 0 ? (
                           <ul className="space-y-2">
                             {meme.comments.slice(-1).map((comment, index) => (
-                              <li key={index} className=" flex flex-col gap-1">
+                              <li key={index} className="flex flex-col gap-1">
                                 <div className="flex gap-1 items-center justify-start max-h-10">
                                   <span className="font-medium ">{comment.user} : </span>
-                                  <p className="  mt-1">{comment.text}</p>
+                                  <p className="mt-1">{comment.text}</p>
                                 </div>
 
-
-                                <button onClick={() => openCommentsModal(meme)} className="text-left">View all  {meme.comments?.length || 0} comments</button>
-                                <CommentsModal 
-                                  isOpen={isModalOpen} 
-                                  onClose={() => setIsModalOpen(false)} 
-                                  meme={selectedMeme}
-                                />;
-
-
-
+                                <button onClick={() => openCommentsModal(meme)} className="text-left">
+                                  View all {meme.comments?.length || 0} comments
+                                </button>
+                                
                               </li>
                             ))}
                           </ul>
@@ -412,8 +342,7 @@ const handleComment = async (memeId) => {
                       </div>
                     </div>
                     
-
-                    {/* COMMENT KRNE KA INPUT  */}
+                    {/* COMMENT INPUT */}
                     <div className="flex gap-2 items-center">
                       <input
                         type="text"
@@ -437,14 +366,17 @@ const handleComment = async (memeId) => {
                       </button>
                     </div>
                   </div>
-
-                  
                 </motion.div>
               ))}
             </AnimatePresence>
           </motion.div>
         </InfiniteScroll>
       </div>
+      <CommentsModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        meme={selectedMeme}
+      />
     </div>
   );
 };
