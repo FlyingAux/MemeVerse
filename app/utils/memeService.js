@@ -2,7 +2,7 @@ const IMGFLIP_API_URL = "https://api.imgflip.com/get_memes";
 
 /**
  * Fetches memes from Imgflip API.
- * @returns {Promise<Array>} An array of memes.
+ * @returns {Promise<Array>} 
  */
 export const getMemes = async () => {
   try {
@@ -19,10 +19,10 @@ export const getMemes = async () => {
 };
 
 /**
- * Updates meme data locally (since there is no backend).
- * @param {Array} memes - Current memes array.
- * @param {Object} updatedMeme - The meme to be updated.
- * @returns {Array} Updated memes array.
+ * 
+ * @param {Array} memes 
+ * @param {Object} updatedMeme 
+ * @returns {Array} 
  */
 export const updateMeme = (memes, updatedMeme) => {
   return memes.map((meme) =>
