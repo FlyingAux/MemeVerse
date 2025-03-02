@@ -90,7 +90,7 @@ const MemeFeed = () => {
       const fetchMemes = async () => {
         try {
           console.log("Fetching memes...");
-          let storedMemes = await getMemes(); // Fetch from IndexedDB
+          let storedMemes = await getMemes();
     
           console.log("Stored Memes fetched:", storedMemes);
     
@@ -111,7 +111,6 @@ const MemeFeed = () => {
               date: new Date().toISOString(),
             }));
     
-            // Save to IndexedDB for future reloads
             storedMemes = imgflipMemes;
             storedMemes.forEach(async (meme) => await updateMeme(meme));  
           }
@@ -120,7 +119,6 @@ const MemeFeed = () => {
             ? JSON.parse(localStorage.getItem(`likedMemes_${storedUser.username}`)) || {}
             : {};
     
-          // Just ensure likes is not undefined, don't modify the count
           const combinedMemes = storedMemes.map(meme => ({
             ...meme,
             likes: meme.likes || 0
