@@ -41,7 +41,7 @@ const Nav = () => {
     <>
   
       <motion.div
-        className="nav-main h-20 w-full flex items-center bg-purple-100 dark:bg-purple-300 justify-between text-xl fixed z-50 px-4 sm:px-20 sm:flex hidden"
+        className="nav-main h-16 w-full flex items-center bg-purple-100 dark:bg-purple-300 justify-between text-xl fixed z-50 px-4 sm:px-20 sm:flex hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4 }}
@@ -60,7 +60,7 @@ const Nav = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, type: "spring", stiffness: 150 }}
           >
-            <Link href="/"  className="flex items-center justify-center gap-2 border-[1px] border-black dark:border-white py-1 px-3 rounded-lg hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
+            <Link href="/"  className="flex items-center   justify-center gap-2 border-[1px] border-black dark:border-white py-1 px-3 rounded-lg hover:border-white hover:bg-purple-600 hover:text-white transition-all duration-200 hover:font-semibold">
               <IoMdHome /> Home
             </Link>
           </motion.div>
