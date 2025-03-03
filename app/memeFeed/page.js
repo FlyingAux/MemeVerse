@@ -360,9 +360,7 @@ const MemeFeed = () => {
                                           <button onClick={() => openCommentsModal(meme)} className="text-2xl text-black dark:text-red-50 ">
                                             <FaRegComment />
                                           </button>
-                                          <span className="text-2xl text-black dark:text-red-50 mt-1">
-                                          <TbLocationShare />
-                                          </span>
+                                          
                                         </div>
                                         <div className="flex items-center justify-start w-full gap-2 mt-2 mb-2">
                           <span className="font-medium">{meme.likes || 0}</span>
